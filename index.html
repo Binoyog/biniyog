@@ -1,46 +1,23 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="bn">
 <head>
   <meta charset="UTF-8">
   <title>Biniyog Login</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      text-align: center;
-      margin-top: 80px;
-    }
-    input {
-      padding: 8px;
-      width: 220px;
-      margin: 5px;
-    }
-    button {
-      padding: 8px 15px;
-      margin: 5px;
-      cursor: pointer;
-    }
-    #msg {
-      margin-top: 15px;
-      color: red;
-    }
-  </style>
 </head>
-<body>
+<body style="text-align:center; font-family:Arial">
 
   <h1>Biniyog Website Live ✅</h1>
   <h2>Login / Sign Up</h2>
 
-  <input type="email" id="email" placeholder="Email"><br>
-  <input type="password" id="password" placeholder="Password"><br>
+  <input type="email" id="email" placeholder="Email"><br><br>
+  <input type="password" id="password" placeholder="Password"><br><br>
 
   <button onclick="login()">Login</button>
   <button onclick="signup()">Sign Up</button>
 
-  <p id="msg"></p>
+  <p id="msg" style="color:red;"></p>
 
-  <!-- Firebase -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import {
@@ -61,33 +38,42 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
 
-    window.login = function () {
-      const email = document.getElementById("email").value;
-      const password = document.getElementById("password").value;
+    function getValues() {
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value.trim();
 
-      signInWithEmailAndPassword(auth, email, password)
+      if (!email || !password) {
+        document.getElementById("msg").innerText = "❌ Email ও Password দিন";
+        return null;
+      }
+      return { email, password };
+    }
+
+    window.signup = function () {
+      const data = getValues();
+      if (!data) return;
+
+      createUserWithEmailAndPassword(auth, data.email, data.password)
+        .then(() => {
+          document.getElementById("msg").style.color = "green";
+          document.getElementById("msg").innerText = "Signup Success 🎉 এখন Login করুন";
+        })
+        .catch(err => {
+          document.getElementById("msg").innerText = err.message;
+        });
+    };
+
+    window.login = function () {
+      const data = getValues();
+      if (!data) return;
+
+      signInWithEmailAndPassword(auth, data.email, data.password)
         .then(() => {
           document.getElementById("msg").style.color = "green";
           document.getElementById("msg").innerText = "Login Success ✅";
         })
-        .catch(error => {
-          document.getElementById("msg").style.color = "red";
-          document.getElementById("msg").innerText = error.message;
-        });
-    };
-
-    window.signup = function () {
-      const email = document.getElementById("email").value;
-      const password = document.getElementById("password").value;
-
-      createUserWithEmailAndPassword(auth, email, password)
-        .then(() => {
-          document.getElementById("msg").style.color = "green";
-          document.getElementById("msg").innerText = "Signup Success 🎉";
-        })
-        .catch(error => {
-          document.getElementById("msg").style.color = "red";
-          document.getElementById("msg").innerText = error.message;
+        .catch(err => {
+          document.getElementById("msg").innerText = err.message;
         });
     };
   </script>
