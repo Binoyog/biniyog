@@ -1,115 +1,145 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="style.css">
-    <!-- BoxIcons -->
-    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
-    <title>HassanAwan</title>
+  <meta charset="UTF-8">
+  <title>Biniyog | Mobile Login</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #ff8c00;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .card {
+      background: #fff;
+      width: 90%;
+      max-width: 350px;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 5px 20px rgba(0,0,0,.2);
+      text-align: center;
+    }
+    h2 {
+      margin-bottom: 20px;
+    }
+    input {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border: none;
+      border-bottom: 2px solid #ccc;
+      outline: none;
+      font-size: 16px;
+    }
+    button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 15px;
+      background: #ff8c00;
+      color: #fff;
+      border: none;
+      border-radius: 25px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    button:disabled {
+      background: #ccc;
+    }
+    #otpSection {
+      display: none;
+    }
+    #msg {
+      margin-top: 15px;
+      font-size: 14px;
+      color: red;
+    }
+  </style>
 </head>
+
 <body>
-    <section class="container forms">
-    <div class="form login">
-        <h3 class="heading">Login-Form</h3>
-        <form action="#" class="content">
-            <div class="line underline"></div>
-            
-            <div class="field input">
-                <input type="email" placeholder="Enter your Email" />
-            </div>
 
-            <div class="field input">
-            <input type="password" placeholder="Enter your Password" class="password" />
-            <i class='bx bx-hide hide-show'></i>
-            </div>
-            
-            <div class="forg">
-                <a href="#" class="forget">Forget password?</a>
-            </div>
+<div class="card">
+  <h2>Biniyog Login</h2>
 
-            <div class="field btn">
-                <button>Login</button>
-            </div>
+  <!-- Phone -->
+  <input type="tel" id="phone" placeholder="+8801XXXXXXXXX">
 
-            <div class="link sign-login">
-                <span>Don't have an Account!</span>
-                <a href="#" class="forget">Sign up</a>
-            </div>
+  <!-- reCAPTCHA -->
+  <div id="recaptcha-container"></div>
 
-            <div class="line"></div>
-            <!-- Other Login Options -->
+  <button onclick="sendOTP()">Send OTP</button>
 
-            <div class="thirdLogin field facebook">
-                <i class='bx bxl-facebook-circle face-icon'></i>
-                <span>Login with facebook</span>
-            </div>
-            
-            <div class="thirdLogin field google">
-                <i class='bx bxl-google face-icon'></i>
-                <span>Login with google</span>
-            </div>
+  <!-- OTP Section -->
+  <div id="otpSection">
+    <input type="text" id="otp" placeholder="Enter OTP">
+    <button onclick="verifyOTP()">Verify OTP</button>
+  </div>
 
+  <p id="msg"></p>
+</div>
 
-        </form>
-    </div>
+<!-- Firebase -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import { getAuth, RecaptchaVerifier, signInWithPhoneNumber } 
+  from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
+  const firebaseConfig = {
+    apiKey: "AIzaSyCTIkplt-eH84ZEQXllDeP7rXUBGQeAdBU",
+    authDomain: "biniyog-web-b6273.firebaseapp.com",
+    projectId: "biniyog-web-b6273",
+    storageBucket: "biniyog-web-b6273.appspot.com",
+    messagingSenderId: "896287012716",
+    appId: "1:896287012716:web:2ddd7892a97cb453516549"
+  };
 
-    <!-- SignUp Form -->
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
 
+  window.recaptchaVerifier = new RecaptchaVerifier(
+    auth,
+    'recaptcha-container',
+    { 'size': 'normal' }
+  );
 
-    <div class="form signup">
-        <h3 class="heading">SignUp-Form</h3>
-        <form action="#" class="content">
-            <div class="line underline"></div>
-            
-            <div class="field input">
-                <input type="email" placeholder="Enter your Email" required />
-            </div>
+  let confirmationResult;
 
-            <div class="field input">
-            <input type="password" placeholder="Enter your new Password" class="password" required />
-            <i class='bx bx-hide hide-show'></i>
-            </div>
+  window.sendOTP = function () {
+    const phone = document.getElementById("phone").value;
 
-            <div class="field input">
-            <input type="password" placeholder="Confirm Password" class="password" required />
-            <i class='bx bx-hide hide-show'></i>
-            </div>
+    if (!phone.startsWith("+880")) {
+      document.getElementById("msg").innerText = "Use format: +8801XXXXXXXXX";
+      return;
+    }
 
-            <div class="space"></div>
+    signInWithPhoneNumber(auth, phone, window.recaptchaVerifier)
+      .then((result) => {
+        confirmationResult = result;
+        document.getElementById("otpSection").style.display = "block";
+        document.getElementById("msg").innerText = "OTP sent successfully ✅";
+      })
+      .catch((error) => {
+        document.getElementById("msg").innerText = error.message;
+      });
+  };
 
-            <div class="field btn">
-                <button>Sign Up</button>
-            </div>
+  window.verifyOTP = function () {
+    const code = document.getElementById("otp").value;
 
-            <div class="link sign-login">
-                <span>Already have an Account!</span>
-                <a href="#" class="forget">Login</a>
-            </div>
+    confirmationResult.confirm(code)
+      .then(() => {
+        document.getElementById("msg").innerText = "Login successful 🎉";
+      })
+      .catch(() => {
+        document.getElementById("msg").innerText = "Invalid OTP ❌";
+      });
+  };
+</script>
 
-
-            <div class="line"></div>
-            <!-- Other Login Options -->
-
-            <div class="thirdLogin field facebook">
-                <i class='bx bxl-facebook-circle face-icon'></i>
-                <span>SignUp with facebook</span>
-            </div>
-            
-            <div class="thirdLogin field google">
-                <i class='bx bxl-google face-icon'></i>
-                <span>SignUp with google</span>
-            </div>
-
-            
-
-
-        </form>
-    </div>
-    </section>
-
-    <script src="./script.js"></script>
 </body>
 </html>
