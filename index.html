@@ -1,47 +1,105 @@
-<!DOCTYPE html>
-<html lang="en">
+body {
+    font-family: 'Montserrat', sans-serif;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background: linear-gradient(to right, #667eea, #764ba2);
+}
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GFG OTP Verification</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap">
-    <link rel="stylesheet" href="styles.css">
-</head>
+.container {
+    width: 100%;
+    max-width: 400px;
+}
 
-<body>
-    <div class="container">
-        <div class="card">
-            <div class="header">
-                <h1 style="color:green">
-                    GeeksforGeeks
-                </h1>
-                <h2 style="color:black">
-                    OTP Verification
-                </h2>
-            </div>
-            <div class="content" id="content">
-                <button id="generateBtn" onclick="OTPFn()">
-                    Generate OTP
-                </button>
-                <div id="otpForm" class="otp-form">
-                    <input type="text" id="userOTP" placeholder="Enter OTP">
-                    <button onclick="OTPVerifyFn()">
-                        Verify
-                    </button>
-                </div>
-                <div id="successMessage" class="success-message">
-                    <i class="fas fa-check"></i>
-                    <p>Congratulations Geek! OTP is Verified!</p>
-                </div>
-                <div id="errorMessage" class="error-message"></div>
-                <div id="timer" class="timer"></div>
-            </div>
-        </div>
-    </div>
-    <script src="script.js"></script>
-</body>
+.card {
+    background-color: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+}
 
-</html>
+.header {
+    background-color: #fbf96f;
+    color: #fff;
+    padding: 20px;
+    text-align: center;
+}
+
+.content {
+    padding: 20px;
+}
+
+button {
+    background-color: #4CAF50;
+    color: #fff;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+.otp-form {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 20px;
+}
+
+input {
+    width: calc(100% - 30px);
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    outline: none;
+}
+
+.success-message {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 20px;
+    color: #4CAF50;
+}
+
+.error-message {
+    color: #e74c3c;
+    margin-top: 10px;
+}
+
+button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+.success-message p {
+    margin: 10px 0;
+}
+
+.otp-display {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.otp-text {
+    font-size: 18px;
+    margin: 0;
+}
+
+input:disabled {
+    background-color: #f2f2f2;
+    color: #a0a0a0;
+    cursor: not-allowed;
+}
+
+.timer {
+    margin-top: 10px;
+    font-size: 14px;
+}
