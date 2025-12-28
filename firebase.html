@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Firebase Init | Biniyog</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+<!-- 🔥 Firebase Initialization (Browser ES Module) -->
+<script type="module">
+  /* =========================
+     Firebase SDKs (CDN)
+  ========================== */
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics.js";
+  import { getAuth } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+  import { getFirestore } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+  /* =========================
+     Your Firebase Config
+  ========================== */
+  const firebaseConfig = {
+    apiKey: "AIzaSyCyx9CwRF03c13QPqmelXDMDiO06f2N2bE",
+    authDomain: "biniyog-e1ab6.firebaseapp.com",
+    projectId: "biniyog-e1ab6",
+    storageBucket: "biniyog-e1ab6.firebasestorage.app",
+    messagingSenderId: "926960872938",
+    appId: "1:926960872938:web:9fad54fc194ad7871e9693",
+    measurementId: "G-LBHBQ2S91V"
+  };
+
+  /* =========================
+     Initialize Firebase
+  ========================== */
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+
+  // Services
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  /* =========================
+     Make Global (Important)
+  ========================== */
+  window.firebaseApp = app;
+  window.firebaseAuth = auth;
+  window.firebaseDB = db;
+
+  console.log("✅ Firebase initialized successfully");
+</script>
+
+<h3 style="text-align:center;margin-top:40px;">
+✅ Firebase Connected Successfully<br>
+Auth + Firestore Ready
+</h3>
+
+</body>
+</html>
