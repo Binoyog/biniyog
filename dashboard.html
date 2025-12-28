@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<title>Biniyog Dashboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+
+<style>
+body{
+    margin:0;
+    font-family:Arial, sans-serif;
+    background:#f5f7fb;
+}
+
+/* Top Bar */
+.header{
+    background:#e91e63;
+    color:#fff;
+    padding:14px;
+    text-align:center;
+    font-size:18px;
+    font-weight:bold;
+}
+
+/* Balance Card */
+.balance-box{
+    margin:15px;
+    background:linear-gradient(135deg,#ff4081,#e91e63);
+    color:#fff;
+    border-radius:18px;
+    padding:25px;
+    text-align:center;
+    box-shadow:0 10px 25px rgba(0,0,0,0.2);
+}
+
+.balance-box h3{
+    margin:0;
+    font-size:16px;
+    opacity:0.9;
+}
+
+.balance-box h1{
+    margin-top:10px;
+    font-size:36px; /* 🔥 মাঝখানে বড় ব্যালেন্স */
+}
+
+/* Grid */
+.grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:16px;
+    padding:16px;
+}
+
+/* Card */
+.card{
+    background:#fff;
+    border-radius:18px;
+    padding:22px 10px;
+    text-align:center;
+    box-shadow:0 6px 18px rgba(0,0,0,0.1);
+    cursor:pointer;
+}
+
+.card i{
+    font-size:60px;   /* 🔥 সর্বোচ্চ বড় আইকন */
+    margin-bottom:12px;
+}
+
+.card span{
+    display:block;
+    font-size:15px;
+    font-weight:bold;
+}
+
+/* Icon Colors */
+.task{color:#e91e63;}
+.deposit{color:#ff4081;}
+.withdraw{color:#d81b60;}
+.plan{color:#ad1457;}
+.profile{color:#1e88e5;}
+.refer{color:#c2185b;}
+.transaction{color:#f06292;}
+.logout{color:#e53935;}
+</style>
+</head>
+
+<body>
+
+<div class="header">
+    ড্যাশবোর্ড
+</div>
+
+<div class="balance-box">
+    <h3>বর্তমান ব্যালেন্স</h3>
+    <h1>৳ 0.00</h1>
+</div>
+
+<div class="grid">
+
+    <div class="card">
+        <i class="fa-solid fa-list-check task"></i>
+        <span>Task</span>
+    </div>
+
+    <div class="card">
+        <i class="fa-solid fa-money-bill deposit"></i>
+        <span>Deposit</span>
+    </div>
+
+    <div class="card">
+        <i class="fa-solid fa-arrow-trend-up withdraw"></i>
+        <span>Withdraw</span>
+    </div>
+
+    <div class="card">
+        <i class="fa-solid fa-chart-line plan"></i>
+        <span>Plan</span>
+    </div>
+
+    <div class="card">
+        <i class="fa-solid fa-user profile"></i>
+        <span>Profile</span>
+    </div>
+
+    <div class="card">
+        <i class="fa-solid fa-users refer"></i>
+        <span>Refer</span>
+    </div>
+
+    <div class="card">
+        <i class="fa-solid fa-right-left transaction"></i>
+        <span>Transaction</span>
+    </div>
+
+    <div class="card">
+        <i class="fa-solid fa-right-from-bracket logout"></i>
+        <span>Logout</span>
+    </div>
+
+</div>
+
+</body>
+</html>
