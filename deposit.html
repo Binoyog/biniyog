@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<title>Deposit | Biniyog</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+body{
+  margin:0;
+  font-family:Arial, sans-serif;
+  background:#f4f6f8;
+}
+
+.header{
+  background:#d9267a;
+  color:#fff;
+  padding:15px;
+  text-align:center;
+  font-size:18px;
+  font-weight:bold;
+}
+
+.container{
+  padding:16px;
+}
+
+.card{
+  background:#fff;
+  padding:18px;
+  border-radius:16px;
+  box-shadow:0 4px 10px rgba(0,0,0,0.08);
+}
+
+.info{
+  background:#ffe6f1;
+  padding:12px;
+  border-radius:10px;
+  margin-bottom:16px;
+  font-size:14px;
+}
+
+.info b{
+  color:#d9267a;
+}
+
+label{
+  display:block;
+  margin-top:14px;
+  font-weight:bold;
+}
+
+input, select{
+  width:100%;
+  padding:12px;
+  margin-top:6px;
+  border-radius:10px;
+  border:1px solid #ccc;
+  font-size:15px;
+}
+
+button{
+  width:100%;
+  margin-top:20px;
+  padding:14px;
+  background:#d9267a;
+  color:#fff;
+  border:none;
+  border-radius:25px;
+  font-size:16px;
+  font-weight:bold;
+}
+
+.note{
+  margin-top:14px;
+  font-size:13px;
+  color:#ff6600;
+  text-align:center;
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">
+  💰 Deposit
+</div>
+
+<div class="container">
+  <div class="card">
+
+    <div class="info">
+      🔔 <b>Send Money Number:</b><br>
+      বিকাশ / নগদ / রকেট <br>
+      <b>01748786117</b><br><br>
+      ⚠️ <b>Minimum Deposit:</b> 500 টাকা
+    </div>
+
+    <form onsubmit="submitDeposit(event)">
+
+      <label>Payment Method</label>
+      <select id="method" required>
+        <option value="">-- Select Method --</option>
+        <option value="Bkash">Bkash</option>
+        <option value="Nagad">Nagad</option>
+        <option value="Rocket">Rocket</option>
+      </select>
+
+      <label>Amount (৳)</label>
+      <input type="number" id="amount" placeholder="Minimum 500" required>
+
+      <label>Transaction ID</label>
+      <input type="text" id="trxid" placeholder="Enter Transaction ID" required>
+
+      <label>Payment Screenshot</label>
+      <input type="file" id="screenshot" accept="image/*" required>
+
+      <button type="submit">
+        Submit Deposit
+      </button>
+
+    </form>
+
+    <div class="note">
+      ⏳ Deposit status will be <b>Pending</b> until admin approval
+    </div>
+
+  </div>
+</div>
+
+<script>
+function submitDeposit(e){
+  e.preventDefault();
+
+  const method = document.getElementById("method").value;
+  const amount = Number(document.getElementById("amount").value);
+  const trxid = document.getElementById("trxid").value;
+
+  if(amount < 500){
+    alert("Minimum deposit amount is 500 টাকা");
+    return;
+  }
+
+  let deposits = JSON.parse(localStorage.getItem("deposits")) || [];
+
+  deposits.push({
+    user: localStorage.getItem("username") || "Unknown",
+    method: method,
+    amount: amount,
+    trxid: trxid,
+    status: "Pending",
+    time: new Date().toLocaleString()
+  });
+
+  localStorage.setItem("deposits", JSON.stringify(deposits));
+
+  alert("✅ Deposit submitted successfully!\nStatus: Pending");
+
+  window.location.href = "dashboard.html";
+}
+</script>
+
+</body>
+</html>
