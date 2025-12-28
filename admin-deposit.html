@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Admin Deposit Approval | Biniyog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #0f172a;
+      color: #fff;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .deposit {
+      background: #1e293b;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 15px;
+    }
+    .deposit p {
+      margin: 6px 0;
+    }
+    button {
+      background: #22c55e;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 5px;
+      cursor: pointer;
+      color: #000;
+      font-weight: bold;
+    }
+    button:disabled {
+      background: #555;
+      cursor: not-allowed;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Admin Deposit Approval</h1>
+
+<div id="depositList">Loading pending deposits...</div>
+
+<script type="module">
+  // 🔥 Firebase SDKs
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+  import { getFirestore, collection, getDocs, doc, updateDoc, increment } 
+    from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+
+  // 🔥 Firebase Config (YOUR REAL CONFIG)
+  const firebaseConfig = {
+    apiKey: "AIzaSyCyx9CwRF03c13QPqmelXDMDiO06f2N2bE",
+    authDomain: "biniyog-e1ab6.firebaseapp.com",
+    projectId: "biniyog-e1ab6",
+    storageBucket: "biniyog-e1ab6.firebasestorage.app",
+    messagingSenderId: "926960872938",
+    appId: "1:926960872938:web:9fad54fc194ad7871e9693",
+    measurementId: "G-LBHBQ2S91V"
+  };
+
+  // 🔥 Init
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  const depositList = document.getElementById("depositList");
+
+  // 🔁 Load Pending Deposits
+  async function loadDeposits() {
+    depositList.innerHTML = "";
+    const querySnapshot = await getDocs(collection(db, "deposit_requests"));
+
+    let hasPending = false;
+
+    querySnapshot.forEach((docSnap) => {
+      const d = docSnap.data();
+
+      if (d.status === "pending") {
+        hasPending = true;
+
+        const div = document.createElement("div");
+        div.className = "deposit";
+        div.innerHTML = `
+          <p><b>User ID:</b> ${d.userId}</p>
+          <p><b>Amount:</b> ৳${d.amount}</p>
+          <p><b>Method:</b> ${d.method}</p>
+          <p><b>Txn ID:</b> ${d.txnId}</p>
+          <button id="btn-${docSnap.id}">Approve</button>
+        `;
+
+        div.querySelector("button").onclick = () =>
+          approveDeposit(docSnap.id, d.userId, d.amount);
+
+        depositList.appendChild(div);
+      }
+    });
+
+    if (!hasPending) {
+      depositList.innerHTML = "<p>No pending deposits.</p>";
+    }
+  }
+
+  // ✅ Approve Deposit (SAFE)
+  async function approveDeposit(depositId, userId, amount) {
+    const confirmApprove = confirm("Approve this deposit?");
+    if (!confirmApprove) return;
+
+    const depositRef = doc(db, "deposit_requests", depositId);
+    const userRef = doc(db, "users", userId);
+
+    // 1️⃣ Add balance to user
+    await updateDoc(userRef, {
+      balance: increment(Number(amount))
+    });
+
+    // 2️⃣ Update deposit status
+    await updateDoc(depositRef, {
+      status: "approved",
+      approvedAt: new Date()
+    });
+
+    alert("Deposit approved & balance updated!");
+    loadDeposits();
+  }
+
+  loadDeposits();
+</script>
+
+</body>
+</html>
