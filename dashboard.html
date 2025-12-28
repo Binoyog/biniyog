@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Biniyog Dashboard</title>
+
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+<style>
+body{
+    margin:0;
+    font-family: Arial, sans-serif;
+    background:#f5f5f5;
+}
+
+/* Top Bar */
+.topbar{
+    background:#e91e63;
+    color:#fff;
+    padding:12px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.topbar span{
+    font-size:16px;
+}
+
+/* Welcome Text */
+.welcome{
+    margin:15px;
+    padding:15px;
+    text-align:center;
+    font-size:22px;
+    font-weight:bold;
+    color:green;
+    background:#e8f5e9;
+    border-radius:8px;
+}
+
+/* Grid */
+.grid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:15px;
+    padding:15px;
+}
+
+/* Card */
+.card{
+    background:#fff;
+    border-radius:12px;
+    padding:25px 10px;
+    text-align:center;
+    box-shadow:0 2px 6px rgba(0,0,0,0.1);
+    cursor:pointer;
+}
+
+.card i{
+    font-size:50px;
+    color:#e91e63;
+    margin-bottom:10px;
+}
+
+.card p{
+    margin:0;
+    font-size:18px;
+    font-weight:bold;
+}
+</style>
+</head>
+
+<body>
+
+<!-- Top Bar -->
+<div class="topbar">
+    <span>প্রোফাইল</span>
+    <span>৳ Balance</span>
+</div>
+
+<!-- Welcome -->
+<div class="welcome">
+    বিনিয়োগ শেয়ার বাজারে আপনাকে স্বাগতম
+</div>
+
+<!-- Dashboard -->
+<div class="grid">
+
+    <div class="card">
+        <i class="fa-solid fa-list-check"></i>
+        <p>Task</p>
+    </div>
+
+    <div class="card">
+        <i class="fa-solid fa-money-bill-wave"></i>
+        <p>Deposit</p>
+    </div>
+
+    <div class="card">
+        <i class="fa-solid fa-arrow-up-right-dots"></i>
+        <p>Withdraw</p>
+    </div>
+
+    <div class="card">
+        <i class="fa-solid fa-chart-line"></i>
+        <p>Plan</p>
+    </div>
+
+    <div class="card">
+        <i class="fa-solid fa-user"></i>
+        <p>Profile</p>
+    </div>
+
+    <div class="card">
+        <i class="fa-solid fa-users"></i>
+        <p>Refer</p>
+    </div>
+
+    <div class="card">
+        <i class="fa-solid fa-right-left"></i>
+        <p>Transaction</p>
+    </div>
+
+    <div class="card">
+        <i class="fa-solid fa-circle-info"></i>
+        <p>About</p>
+    </div>
+
+</div>
+
+</body>
+</html>
