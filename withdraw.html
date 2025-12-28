@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <title>Biniyog | Withdraw</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f4f6f8;
+    }
+    .header {
+      background: #e91e63;
+      color: #fff;
+      padding: 15px;
+      text-align: center;
+    }
+    .box {
+      background: #fff;
+      margin: 15px;
+      padding: 15px;
+      border-radius: 10px;
+    }
+    h3 {
+      margin-top: 0;
+    }
+    input, select {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 12px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      outline: none;
+    }
+    button {
+      width: 100%;
+      padding: 12px;
+      background: #e91e63;
+      color: #fff;
+      font-size: 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .note {
+      background: #e3f2fd;
+      padding: 10px;
+      border-radius: 6px;
+      font-size: 14px;
+      margin: 15px;
+    }
+    .pending {
+      background: #fff;
+      margin: 15px;
+      padding: 10px;
+      border-radius: 10px;
+      font-size: 14px;
+      border-left: 5px solid #ff9800;
+    }
+    .back {
+      margin: 15px;
+      text-align: center;
+    }
+    .back a {
+      text-decoration: none;
+      color: #e91e63;
+    }
+  </style>
+</head>
+
+<body>
+
+<script>
+  // Login protection
+  const user = localStorage.getItem("loggedInUser");
+  if (!user) {
+    window.location.href = "index.html";
+  }
+</script>
+
+<div class="header">
+  <h2>Withdraw</h2>
+</div>
+
+<div class="note">
+  💸 সর্বনিম্ন উইথড্র: <strong>500 টাকা</strong><br>
+  ⏳ উইথড্র অনুরোধ Pending অবস্থায় থাকবে
+</div>
+
+<div class="box">
+  <h3>উইথড্র ফর্ম</h3>
+
+  <input type="number" id="amount" placeholder="উইথড্র এমাউন্ট (৳)">
+
+  <select id="method">
+    <option value="">পেমেন্ট মেথড নির্বাচন করুন</option>
+    <option value="bKash">bKash</option>
+    <option value="Nagad">Nagad</option>
+    <option value="Rocket">Rocket</option>
+  </select>
+
+  <input type="text" id="number" placeholder="আপনার পেমেন্ট নাম্বার">
+
+  <button onclick="submitWithdraw()">Submit Withdraw</button>
+</div>
+
+<div id="pendingList"></div>
+
+<div class="back">
+  <a href="dashboard.html">⬅ Dashboard এ ফিরে যান</a>
+</div>
+
+<script>
+  function submitWithdraw() {
+    const amount = Number(document.getElementById("amount").value);
+    const method = document.getElementById("method").value;
+    const number = document.getElementById("number").value.trim();
+
+    if (!amount || amount < 500) {
+      alert("সর্বনিম্ন উইথড্র ৫০০ টাকা");
+      return;
+    }
+    if (method === "" || number === "") {
+      alert("সব তথ্য পূরণ করুন");
+      return;
+    }
+
+    let withdraws = JSON.parse(localStorage.getItem("withdraws")) || [];
+
+    withdraws.push({
+      user: user,
+      amount: amount,
+      method: method,
+      number: number,
+      status: "pending",
+      time: new Date().toLocaleString()
+    });
+
+    localStorage.setItem("withdraws", JSON.stringify(withdraws));
+
+    alert("উইথড্র অনুরোধ পাঠানো হয়েছে (Pending)");
+
+    document.getElementById("amount").value = "";
+    document.getElementById("number").value = "";
+
+    loadPending();
+  }
+
+  function loadPending() {
+    let withdraws = JSON.parse(localStorage.getItem("withdraws")) || [];
+    let html = "";
+
+    withdraws
+      .filter(w => w.user === user)
+      .reverse()
+      .forEach(w => {
+        html += `
+          <div class="pending">
+            <strong>${w.method}</strong><br>
+            এমাউন্ট: ${w.amount} টাকা<br>
+            নাম্বার: ${w.number}<br>
+            স্ট্যাটাস: <strong>${w.status}</strong><br>
+            সময়: ${w.time}
+          </div>
+        `;
+      });
+
+    document.getElementById("pendingList").innerHTML =
+      html || "<p style='text-align:center;'>কোনো উইথড্র অনুরোধ নেই</p>";
+  }
+
+  loadPending();
+</script>
+
+</body>
+</html>
