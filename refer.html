@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<title>Biniyog | Refer & Earn</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body{margin:0;font-family:Arial;background:#0f172a;color:#fff}
+header{background:#020617;padding:15px;text-align:center;font-size:20px}
+.card{background:#020617;margin:15px;padding:15px;border-radius:12px}
+.code{font-size:22px;color:#22c55e;font-weight:bold;text-align:center}
+.btn{background:#22c55e;color:#000;padding:10px;border-radius:8px;text-align:center;margin-top:10px}
+</style>
+</head>
+
+<body>
+
+<header>👥 Refer & Earn</header>
+
+<div class="card">
+<div>Your Referral Code</div>
+<div class="code" id="code">----</div>
+<div class="btn" onclick="copy()">Copy Code</div>
+</div>
+
+<div class="card">
+<div>Total Refer Income</div>
+<h2>৳ <span id="income">0</span></h2>
+</div>
+
+<a href="dashboard.html" class="btn" style="margin:15px;">⬅ Dashboard</a>
+
+<script>
+const user = localStorage.getItem("loggedInUser");
+if(!user) location.href="index.html";
+
+let users = JSON.parse(localStorage.getItem("users")) || [];
+
+let me = users.find(u=>u.phone===user);
+document.getElementById("code").innerText = me.referralCode;
+document.getElementById("income").innerText = me.referReward || 0;
+
+function copy(){
+  navigator.clipboard.writeText(me.referralCode);
+  alert("Referral Code Copied!");
+}
+</script>
+
+</body>
+</html>
