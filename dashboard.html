@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<title>Biniyog | Dashboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+body{margin:0;font-family:Arial;background:#f4f6f8}
+.header{background:#0f172a;color:#fff;padding:15px;text-align:center}
+.balance{font-size:28px;margin-top:5px}
+.grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:15px;
+  padding:15px;
+}
+.box{
+  background:#fff;
+  padding:20px;
+  border-radius:14px;
+  text-align:center;
+  font-weight:bold;
+}
+.box a{text-decoration:none;color:#000}
+.logout{color:red;text-align:center;margin:10px;font-weight:bold}
+</style>
+</head>
+
+<body>
+
+<script>
+const user = localStorage.getItem("loggedInUser");
+if(!user){ location.href="index.html"; }
+</script>
+
+<div class="header">
+<div>👤 Welcome</div>
+<div class="balance">৳<span id="bal">0</span></div>
+</div>
+
+<div class="grid">
+
+<div class="box"><a href="deposit.html">💳 Deposit</a></div>
+<div class="box"><a href="withdraw.html">💸 Withdraw</a></div>
+<div class="box"><a href="investment.html">📈 Investment</a></div>
+<div class="box"><a href="balance.html">💰 Balance</a></div>
+<div class="box"><a href="transaction.html">📜 History</a></div>
+<div class="box"><a href="refer.html">🤝 Refer & Earn</a></div>
+
+</div>
+
+<div class="logout" onclick="logout()">Logout</div>
+
+<script>
+function calculateBalance(){
+  let deposits = JSON.parse(localStorage.getItem("deposits"))||[];
+  let withdraws = JSON.parse(localStorage.getItem("withdraws"))||[];
+  let d=0,w=0;
+
+  deposits.filter(x=>x.user===user && x.status==="approved")
+    .forEach(x=>d+=Number(x.amount));
+
+  withdraws.filter(x=>x.user===user && x.status==="approved")
+    .forEach(x=>w+=Number(x.amount));
+
+  document.getElementById("bal").innerText = d-w;
+}
+
+function logout(){
+  localStorage.removeItem("loggedInUser");
+  location.href="index.html";
+}
+
+calculateBalance();
+</script>
+
+</body>
+</html>
