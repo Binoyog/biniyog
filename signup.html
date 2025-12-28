@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<title>Biniyog | Signup</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body{
+  margin:0;
+  font-family:Arial;
+  background:#0f172a;
+  color:#fff;
+}
+.container{
+  padding:20px;
+}
+.card{
+  background:#020617;
+  padding:20px;
+  border-radius:15px;
+  box-shadow:0 0 10px rgba(0,0,0,.5);
+}
+h2{text-align:center}
+input,button{
+  width:100%;
+  padding:12px;
+  margin-top:10px;
+  border-radius:8px;
+  border:none;
+  font-size:16px;
+}
+input{background:#020617;color:#fff;border:1px solid #334155}
+button{background:#22c55e;color:#000;font-weight:bold}
+a{color:#38bdf8;text-decoration:none}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+<div class="card">
+<h2>📝 Signup</h2>
+
+<input type="text" id="phone" placeholder="মোবাইল নাম্বার">
+<input type="password" id="pass" placeholder="পাসওয়ার্ড">
+<input type="text" id="ref" placeholder="Referral Code (Optional)">
+<button onclick="signup()">Create Account</button>
+
+<p style="text-align:center;margin-top:15px;">
+Already have account? <a href="index.html">Login</a>
+</p>
+</div>
+</div>
+
+<script>
+function signup(){
+  let phone = phoneInput();
+  let pass = document.getElementById("pass").value.trim();
+  let ref = document.getElementById("ref").value.trim();
+
+  if(phone.length<11 || pass.length<4){
+    alert("সঠিক তথ্য দিন");
+    return;
+  }
+
+  let users = JSON.parse(localStorage.getItem("users")) || [];
+
+  if(users.find(u=>u.phone===phone)){
+    alert("এই নাম্বার আগে থেকেই আছে");
+    return;
+  }
+
+  let referralCode = "BN" + Math.floor(100000 + Math.random()*900000);
+
+  users.push({
+    phone,
+    password: pass,
+    referralCode,
+    referredBy: ref || null,
+    referReward: 0,
+    l1Paid:false
+  });
+
+  localStorage.setItem("users", JSON.stringify(users));
+  localStorage.setItem("balance_"+phone, 0);
+
+  alert("Signup successful!");
+  location.href="index.html";
+}
+
+function phoneInput(){
+  return document.getElementById("phone").value.trim();
+}
+</script>
+
+</body>
+</html>
