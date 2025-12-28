@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <title>Biniyog | Investment Plans</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f4f6f8;
+    }
+    .header {
+      background: #2563eb;
+      color: #fff;
+      padding: 15px;
+      text-align: center;
+    }
+    .balance {
+      background: #fff;
+      margin: 15px;
+      padding: 15px;
+      border-radius: 10px;
+      font-size: 18px;
+      text-align: center;
+    }
+    .plan {
+      background: #fff;
+      margin: 15px;
+      padding: 15px;
+      border-radius: 10px;
+    }
+    .plan h3 {
+      margin: 0 0 10px;
+    }
+    .plan p {
+      margin: 5px 0;
+      font-size: 14px;
+    }
+    button {
+      width: 100%;
+      padding: 10px;
+      background: #22c55e;
+      border: none;
+      color: #fff;
+      font-size: 16px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    button:disabled {
+      background: #9ca3af;
+    }
+    .back {
+      text-align: center;
+      margin: 15px;
+    }
+    .back a {
+      text-decoration: none;
+      color: #2563eb;
+    }
+  </style>
+</head>
+
+<body>
+
+<script>
+  const user = localStorage.getItem("loggedInUser");
+  if (!user) {
+    window.location.href = "index.html";
+  }
+</script>
+
+<div class="header">
+  <h2>📈 Investment Plans</h2>
+</div>
+
+<div class="balance">
+  বর্তমান ব্যালেন্স: ৳ <b id="balance">0</b>
+</div>
+
+<!-- PLAN 1 -->
+<div class="plan">
+  <h3>Mini Plan</h3>
+  <p>💰 বিনিয়োগ: ৳500</p>
+  <p>⏱️ আয়: ৳90 / ২৪ ঘন্টা</p>
+  <p>📆 মেয়াদ: ১০ দিন</p>
+  <button onclick="buyPlan('Mini Plan',500,90,10)">Buy Plan</button>
+</div>
+
+<!-- PLAN 2 -->
+<div class="plan">
+  <h3>Windmill Plan</h3>
+  <p>💰 বিনিয়োগ: ৳1,000</p>
+  <p>⏱️ আয়: ৳197 / ২৪ ঘন্টা</p>
+  <p>📆 মেয়াদ: ১০ দিন</p>
+  <button onclick="buyPlan('Windmill Plan',1000,197,10)">Buy Plan</button>
+</div>
+
+<!-- PLAN 3 -->
+<div class="plan">
+  <h3>Share Plan</h3>
+  <p>💰 বিনিয়োগ: ৳2,000</p>
+  <p>⏱️ আয়: ৳470 / ২৪ ঘন্টা</p>
+  <p>📆 মেয়াদ: ১০ দিন</p>
+  <button onclick="buyPlan('Share Plan 2K',2000,470,10)">Buy Plan</button>
+</div>
+
+<!-- PLAN 4 -->
+<div class="plan">
+  <h3>Share Plan</h3>
+  <p>💰 বিনিয়োগ: ৳5,000</p>
+  <p>⏱️ আয়: ৳1,280 / ২৪ ঘন্টা</p>
+  <p>📆 মেয়াদ: ১০ দিন</p>
+  <button onclick="buyPlan('Share Plan 5K',5000,1280,10)">Buy Plan</button>
+</div>
+
+<!-- PLAN 5 -->
+<div class="plan">
+  <h3>National Plan</h3>
+  <p>💰 বিনিয়োগ: ৳20,000</p>
+  <p>⏱️ আয়: ৳5,500 / ২৪ ঘন্টা</p>
+  <p>📆 মেয়াদ: ৬ দিন</p>
+  <button onclick="buyPlan('National Plan',20000,5500,6)">Buy Plan</button>
+</div>
+
+<div class="back">
+  <a href="dashboard.html">⬅ Dashboard এ ফিরে যান</a>
+</div>
+
+<script>
+  function getBalance() {
+    let deposits = JSON.parse(localStorage.getItem("deposits")) || [];
+    let withdraws = JSON.parse(localStorage.getItem("withdraws")) || [];
+
+    let totalDeposit = 0;
+    let totalWithdraw = 0;
+
+    deposits.filter(d => d.user === user)
+      .forEach(d => totalDeposit += Number(d.amount));
+
+    withdraws.filter(w => w.user === user && w.status === "approved")
+      .forEach(w => totalWithdraw += Number(w.amount));
+
+    return totalDeposit - totalWithdraw;
+  }
+
+  function loadBalance() {
+    document.getElementById("balance").innerText = getBalance();
+  }
+
+  function buyPlan(name, price, daily, days) {
+    let balance = getBalance();
+
+    if (balance < price) {
+      alert("❌ পর্যাপ্ত ব্যালেন্স নেই");
+      return;
+    }
+
+    let plans = JSON.parse(localStorage.getItem("investments")) || [];
+
+    plans.push({
+      user: user,
+      plan: name,
+      price: price,
+      daily: daily,
+      days: days,
+      start: Date.now(),
+      earned: 0,
+      status: "active"
+    });
+
+    localStorage.setItem("investments", JSON.stringify(plans));
+
+    // balance কাটার জন্য fake withdraw
+    let withdraws = JSON.parse(localStorage.getItem("withdraws")) || [];
+    withdraws.push({
+      user: user,
+      amount: price,
+      method: "Investment Buy",
+      status: "approved"
+    });
+    localStorage.setItem("withdraws", JSON.stringify(withdraws));
+
+    alert("✅ Plan সফলভাবে কেনা হয়েছে");
+    loadBalance();
+  }
+
+  loadBalance();
+</script>
+
+</body>
+</html>
