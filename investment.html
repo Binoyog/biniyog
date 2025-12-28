@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<title>Investment</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+body{font-family:Arial;background:#f4f6f8;margin:0}
+.header{background:#15803d;color:#fff;padding:15px;text-align:center}
+.card{background:#fff;margin:15px;padding:15px;border-radius:12px}
+button{background:#15803d;color:#fff;border:none;padding:8px;border-radius:6px}
+</style>
+</head>
+<body>
+
+<script>
+const user=localStorage.getItem("loggedInUser");
+if(!user)location.href="index.html";
+</script>
+
+<div class="header"><h2>📈 Investment Plans</h2></div>
+
+<div class="card">
+<h4>Mini Plan</h4>
+৳500 → Daily ৳90 (10 days)
+<button onclick="buy(500,90,10)">Buy</button>
+</div>
+
+<div class="card">
+<h4>Windmill Plan</h4>
+৳1000 → Daily ৳197 (10 days)
+<button onclick="buy(1000,197,10)">Buy</button>
+</div>
+
+<div class="card">
+<h4>Share Plan</h4>
+৳2000 → Daily ৳470 (10 days)
+<button onclick="buy(2000,470,10)">Buy</button>
+</div>
+
+<script>
+function balance(){
+ let d=0,w=0;
+ let dep=JSON.parse(localStorage.getItem("deposits"))||[];
+ let wit=JSON.parse(localStorage.getItem("withdraws"))||[];
+ dep.filter(x=>x.user===user && x.status==="approved").forEach(x=>d+=x.amount);
+ wit.filter(x=>x.user===user && x.status==="approved").forEach(x=>w+=x.amount);
+ return d-w;
+}
+
+function buy(amount,daily,days){
+ if(balance()<amount){alert("❌ Balance কম");return;}
+ let inv=JSON.parse(localStorage.getItem("investments"))||[];
+ inv.push({
+  user,amount,daily,days,
+  start:Date.now(),
+  earned:0
+ });
+ localStorage.setItem("investments",JSON.stringify(inv));
+ alert("✅ Investment Successful");
+}
+</script>
+
+</body>
+</html>
