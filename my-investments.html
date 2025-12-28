@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<title>My Investments</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+body{font-family:Arial;background:#f4f6f8;margin:0}
+.header{background:#7c3aed;color:#fff;padding:15px;text-align:center}
+.card{background:#fff;margin:15px;padding:15px;border-radius:12px}
+.active{color:green;font-weight:bold}
+.expired{color:red;font-weight:bold}
+</style>
+</head>
+<body>
+
+<script>
+const user = localStorage.getItem("loggedInUser");
+if(!user) location.href="index.html";
+</script>
+
+<div class="header">
+<h2>📊 My Investments</h2>
+</div>
+
+<div id="list"></div>
+
+<script>
+let investments = JSON.parse(localStorage.getItem("investments")) || [];
+let now = Date.now();
+let html="";
+
+investments.filter(i=>i.user===user).forEach(inv=>{
+  let daysPassed = Math.floor((now - inv.start)/(24*60*60*1000));
+  let status = daysPassed >= inv.days ? "Expired" : "Active";
+
+  html += `
+  <div class="card">
+    <div><b>Invested:</b> ৳${inv.amount}</div>
+    <div><b>Daily Income:</b> ৳${inv.daily}</div>
+    <div><b>Earned:</b> ৳${inv.earned}</div>
+    <div><b>Status:</b> 
+      <span class="${status==='Active'?'active':'expired'}">${status}</span>
+    </div>
+  </div>`;
+});
+
+document.getElementById("list").innerHTML = html || "No investment yet";
+</script>
+
+</body>
+</html>
