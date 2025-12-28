@@ -1,93 +1,85 @@
 <!DOCTYPE html>
 <html lang="bn">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Biniyog | Signup</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Biniyog | Signup</title>
 
-  <style>
-    *{box-sizing:border-box;font-family:Arial}
-    body{
-      margin:0;
-      height:100vh;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
-    }
-    .card{
-      background:#fff;
-      width:100%;
-      max-width:400px;
-      padding:25px;
-      border-radius:12px;
-      box-shadow:0 10px 25px rgba(0,0,0,.25);
-    }
-    h2{text-align:center;color:#203a43}
-    label{margin-top:15px;display:block;font-size:14px}
-    input{
-      width:100%;
-      padding:12px;
-      margin-top:6px;
-      border:1px solid #ccc;
-      border-radius:8px;
-    }
-    button{
-      width:100%;
-      margin-top:22px;
-      padding:12px;
-      background:#203a43;
-      color:#fff;
-      border:none;
-      border-radius:8px;
-      font-size:16px;
-      cursor:pointer;
-    }
-    button:hover{background:#162c33}
-    .links{text-align:center;margin-top:15px;font-size:14px}
-    a{color:#203a43;text-decoration:none}
-  </style>
+<style>
+body{
+  margin:0;
+  font-family:Arial;
+  height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  background:#0f2027;
+}
+.box{
+  background:#fff;
+  width:90%;
+  max-width:360px;
+  padding:25px;
+  border-radius:10px;
+}
+h2{text-align:center}
+input{
+  width:100%;
+  padding:12px;
+  margin-top:10px;
+  border:1px solid #ccc;
+  border-radius:6px;
+}
+button{
+  width:100%;
+  padding:12px;
+  margin-top:15px;
+  background:#0f2027;
+  color:#fff;
+  border:none;
+  border-radius:6px;
+  font-size:16px;
+}
+a{
+  display:block;
+  text-align:center;
+  margin-top:12px;
+  text-decoration:none;
+  color:#0f2027;
+}
+</style>
 </head>
+
 <body>
 
-<div class="card">
-  <h2>Biniyog Signup</h2>
+<div class="box">
+<h2>নতুন একাউন্ট তৈরি</h2>
 
-  <form onsubmit="signup(event)">
-    <label>নাম</label>
-    <input type="text" id="name" required placeholder="আপনার নাম">
+<form id="signupForm">
+  <input type="text" id="name" placeholder="নাম" required>
+  <input type="tel" id="mobile" placeholder="01XXXXXXXXX" required>
+  <input type="password" id="pass" placeholder="পাসওয়ার্ড" required>
+  <input type="password" id="cpass" placeholder="কনফার্ম পাসওয়ার্ড" required>
+  <button type="submit">একাউন্ট তৈরি করুন</button>
+</form>
 
-    <label>মোবাইল নাম্বার</label>
-    <input type="tel" id="mobile" required placeholder="01XXXXXXXXX">
-
-    <label>পাসওয়ার্ড</label>
-    <input type="password" id="password" required placeholder="পাসওয়ার্ড">
-
-    <label>কনফার্ম পাসওয়ার্ড</label>
-    <input type="password" id="cpassword" required placeholder="আবার পাসওয়ার্ড">
-
-    <button type="submit">একাউন্ট তৈরি করুন</button>
-  </form>
-
-  <div class="links">
-    আগে থেকেই একাউন্ট আছে? <a href="index.html">লগইন করুন</a>
-  </div>
+<a href="index.html">লগইনে ফিরে যান</a>
 </div>
 
 <script>
-function signup(e){
+document.getElementById("signupForm").addEventListener("submit", function(e){
   e.preventDefault();
 
-  const p = document.getElementById("password").value;
-  const cp = document.getElementById("cpassword").value;
+  const p = document.getElementById("pass").value;
+  const cp = document.getElementById("cpass").value;
 
   if(p !== cp){
     alert("❌ পাসওয়ার্ড মিলছে না");
     return;
   }
 
-  alert("✅ Signup কাজ করছে (Backend এখনো যুক্ত হয়নি)");
-}
+  alert("✅ Signup বাটন কাজ করছে (Backend যুক্ত হয়নি)");
+});
 </script>
 
 </body>
