@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<title>বিনিয়োগ | Dashboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body{
+    margin:0;
+    font-family: Arial, sans-serif;
+    background:#f5f5f5;
+}
+
+/* ===== Header ===== */
+.header{
+    background:linear-gradient(135deg,#f4511e,#ff7043);
+    color:#fff;
+    padding:25px 15px 35px;
+    position:relative;
+}
+.header h1{
+    text-align:center;
+    margin:0;
+    font-size:34px;
+}
+.header p{
+    text-align:center;
+    margin:6px 0 18px;
+    font-size:14px;
+    opacity:.9;
+}
+.balance-btn{
+    background:#fff;
+    color:#f4511e;
+    margin:0 auto;
+    width:85%;
+    padding:14px;
+    border-radius:30px;
+    font-size:16px;
+    font-weight:600;
+    text-align:center;
+}
+
+/* ===== Section ===== */
+.section{
+    padding:15px;
+}
+.section h3{
+    margin:15px 5px;
+    font-size:17px;
+    color:#444;
+}
+
+/* ===== Grid ===== */
+.grid{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:15px;
+}
+.card{
+    background:linear-gradient(135deg,#f4511e,#ff7043);
+    border-radius:18px;
+    height:90px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    color:#fff;
+    font-size:13px;
+}
+.card span{
+    font-size:34px;
+    margin-bottom:6px;
+}
+
+/* ===== Bottom Nav ===== */
+.bottom{
+    position:fixed;
+    bottom:0;
+    width:100%;
+    background:#fff;
+    border-top:1px solid #ddd;
+    display:flex;
+    justify-content:space-around;
+    padding:8px 0;
+}
+.bottom div{
+    text-align:center;
+    font-size:12px;
+    color:#777;
+}
+.bottom span{
+    display:block;
+    font-size:22px;
+}
+.active{
+    color:#f4511e;
+}
+</style>
+</head>
+
+<body>
+
+<!-- Header -->
+<div class="header">
+    <h1>বিনিয়োগ</h1>
+    <p>ডাক বিভাগের ডিজিটাল লেনদেন</p>
+    <div class="balance-btn">৳ ব্যালেন্স জানতে ট্যাপ করুন</div>
+</div>
+
+<!-- Services -->
+<div class="section">
+    <h3>সার্ভিস সমূহ</h3>
+    <div class="grid">
+        <div class="card"><span>📤</span>সেন্ড মানি</div>
+        <div class="card"><span>🏧</span>ক্যাশ আউট</div>
+        <div class="card"><span>📱</span>মোবাইল রিচার্জ</div>
+        <div class="card"><span>➕</span>অ্যাড মানি</div>
+        <div class="card"><span>🔄</span>ট্রান্সফার</div>
+        <div class="card"><span>🛡️</span>ইন্স্যুরেন্স</div>
+    </div>
+</div>
+
+<!-- Payment -->
+<div class="section">
+    <h3>পেমেন্ট</h3>
+    <div class="grid">
+        <div class="card"><span>🛒</span>মার্চেন্ট পে</div>
+        <div class="card"><span>⚡</span>বিল পে</div>
+        <div class="card"><span>⏰</span>ইএমআই পেমেন্ট</div>
+        <div class="card"><span>📦</span>অন্যান্য</div>
+    </div>
+</div>
+
+<!-- Bottom Navigation -->
+<div class="bottom">
+    <div class="active"><span>🏠</span>হোম</div>
+    <div><span>📄</span>লেনদেন</div>
+    <div><span>👥</span>কন্টাক্ট</div>
+    <div><span>☰</span>আমার বিনিয়োগ</div>
+</div>
+
+</body>
+</html>
