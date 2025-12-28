@@ -1,57 +1,111 @@
 <!DOCTYPE html>
 <html lang="bn">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Biniyog | Login</title>
+  <meta charset="UTF-8">
+  <title>Biniyog | Login</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<style>
-body{
-  margin:0;
-  font-family:Arial;
-  height:100vh;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  background:#203a43;
-}
-.box{
-  background:#fff;
-  width:90%;
-  max-width:360px;
-  padding:25px;
-  border-radius:10px;
-  text-align:center;
-}
-input,button{
-  width:100%;
-  padding:12px;
-  margin-top:10px;
-}
-button{
-  background:#203a43;
-  color:#fff;
-  border:none;
-}
-a{
-  display:block;
-  margin-top:10px;
-  text-decoration:none;
-  color:#203a43;
-}
-</style>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #020617;
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .box {
+      background: #0f172a;
+      padding: 25px;
+      width: 100%;
+      max-width: 350px;
+      border-radius: 10px;
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    input {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 12px;
+      border-radius: 6px;
+      border: none;
+      outline: none;
+    }
+    button {
+      width: 100%;
+      padding: 12px;
+      background: #38bdf8;
+      color: #000;
+      font-size: 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    button:hover {
+      opacity: 0.9;
+    }
+    .link {
+      text-align: center;
+      margin-top: 15px;
+    }
+    .link a {
+      color: #22c55e;
+      text-decoration: none;
+      display: block;
+      margin-top: 6px;
+    }
+  </style>
 </head>
 
 <body>
-<div class="box">
-  <h2>Biniyog</h2>
 
-  <input type="tel" placeholder="01XXXXXXXXX">
-  <input type="password" placeholder="পাসওয়ার্ড">
-  <button>লগইন</button>
+  <div class="box">
+    <h2>Login</h2>
 
-  <a href="forgot-password.html">পাসওয়ার্ড ভুলে গেছেন?</a>
-  <a href="signup.html">নতুন ইউজার? একাউন্ট তৈরি করুন</a>
-</div>
+    <input type="tel" id="phone" placeholder="মোবাইল নাম্বার">
+    <input type="password" id="password" placeholder="পাসওয়ার্ড">
+
+    <button onclick="login()">Login</button>
+
+    <div class="link">
+      <a href="signup.html">Create new account</a>
+      <a href="forgot-password.html">Forgot password?</a>
+    </div>
+  </div>
+
+  <script>
+    function login() {
+      const phone = document.getElementById("phone").value.trim();
+      const password = document.getElementById("password").value;
+
+      if (phone === "" || password === "") {
+        alert("সব ফিল্ড পূরণ করুন");
+        return;
+      }
+
+      let users = JSON.parse(localStorage.getItem("users")) || [];
+
+      const user = users.find(
+        u => u.phone === phone && u.password === password
+      );
+
+      if (!user) {
+        alert("নাম্বার অথবা পাসওয়ার্ড ভুল");
+        return;
+      }
+
+      // Login success হলে session save
+      localStorage.setItem("loggedInUser", phone);
+
+      alert("Login সফল হয়েছে ✅");
+
+      // Dashboard এ পাঠাও
+      window.location.href = "dashboard.html";
+    }
+  </script>
+
 </body>
 </html>
