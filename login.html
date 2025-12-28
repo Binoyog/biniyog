@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<title>বিনিয়োগ | Login</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body{
+    margin:0;
+    font-family: Arial, sans-serif;
+    background:#ffffff;
+}
+
+/* Top Bar */
+.topbar{
+    height:55px;
+    background:#f4511e;
+}
+
+/* Language Switch */
+.lang{
+    position:absolute;
+    top:65px;
+    right:20px;
+    border:1px solid #f4511e;
+    border-radius:20px;
+    overflow:hidden;
+    font-size:14px;
+}
+.lang span{
+    padding:6px 14px;
+    display:inline-block;
+}
+.lang .active{
+    background:#f4511e;
+    color:#fff;
+}
+
+/* Logo Section */
+.logo{
+    text-align:center;
+    margin-top:40px;
+}
+
+.logo h1{
+    margin-top:15px;
+    font-size:42px;
+    color:#f4511e;
+    font-weight:bold;
+}
+
+/* Number */
+.number{
+    text-align:center;
+    margin-top:20px;
+    color:#555;
+}
+.number strong{
+    display:block;
+    margin-top:5px;
+    font-size:20px;
+    color:#000;
+}
+
+/* Input */
+.form{
+    width:85%;
+    margin:40px auto 0;
+}
+
+.input-group{
+    display:flex;
+    align-items:center;
+    border-bottom:1px solid #ccc;
+    padding:10px 0;
+}
+
+.input-group span{
+    font-size:18px;
+    color:#f4511e;
+    margin-right:10px;
+}
+
+.input-group input{
+    border:none;
+    outline:none;
+    font-size:18px;
+    width:100%;
+}
+
+/* Button */
+button{
+    width:100%;
+    margin-top:30px;
+    padding:14px;
+    font-size:18px;
+    border-radius:30px;
+    border:2px solid #f4511e;
+    background:#fff;
+    color:#f4511e;
+    cursor:pointer;
+}
+
+/* Forgot */
+.forgot{
+    text-align:center;
+    margin-top:18px;
+    color:#999;
+    font-size:14px;
+}
+
+/* Bottom Icons */
+.bottom{
+    position:fixed;
+    bottom:20px;
+    width:100%;
+    display:flex;
+    justify-content:space-around;
+    text-align:center;
+    color:#f4511e;
+}
+
+.bottom div{
+    font-size:14px;
+}
+.bottom span{
+    display:block;
+    font-size:26px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="topbar"></div>
+
+<div class="lang">
+    <span class="active">বাংলা</span><span>ENG</span>
+</div>
+
+<div class="logo">
+    <!-- এখানে ইমেজ না দিয়ে টেক্সট ব্যবহার করা হয়েছে -->
+    <h1>বিনিয়োগ</h1>
+</div>
+
+<div class="number">
+    মোবাইল নাম্বার
+    <strong>01734-289027</strong>
+</div>
+
+<div class="form">
+    <div class="input-group">
+        <span>🔒</span>
+        <input type="password" placeholder="পিন">
+    </div>
+
+    <button>লগ ইন</button>
+
+    <div class="forgot">
+        পিন নাম্বার ভুলে গিয়েছেন?
+    </div>
+</div>
+
+<div class="bottom">
+    <div>
+        <span>📍</span>
+        স্টোর সন্ধান
+    </div>
+    <div>
+        <span>％</span>
+        অফার
+    </div>
+    <div>
+        <span>❓</span>
+        সাহায্য
+    </div>
+</div>
+
+</body>
+</html>
