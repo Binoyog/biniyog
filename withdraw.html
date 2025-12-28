@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<title>Biniyog | Withdraw</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body{margin:0;font-family:Arial;background:#0f172a;color:#fff}
+header{background:#020617;padding:15px;text-align:center;font-size:20px}
+.container{padding:15px}
+.card{
+  background:#020617;
+  padding:15px;
+  border-radius:15px;
+  margin-bottom:15px;
+}
+input,select,button{
+  width:100%;
+  padding:12px;
+  margin-top:10px;
+  border-radius:8px;
+  border:none;
+}
+input,select{background:#020617;color:#fff;border:1px solid #334155}
+button{background:#ef4444;color:#fff;font-weight:bold}
+.status{
+  padding:6px 12px;
+  border-radius:20px;
+  font-size:12px;
+  font-weight:bold;
+  display:inline-block;
+}
+.pending{background:#facc15;color:#000}
+</style>
+</head>
+
+<body>
+
+<header>💸 Withdraw</header>
+
+<div class="container">
+
+<div class="card">
+<h3>Withdraw Request</h3>
+
+<select id="method">
+  <option value="">পেমেন্ট মেথড নির্বাচন করুন</option>
+  <option>bKash</option>
+  <option>Nagad</option>
+  <option>Rocket</option>
+</select>
+
+<input type="text" id="number" placeholder="পেমেন্ট নাম্বার">
+<input type="number" id="amount" placeholder="Withdraw Amount (min 500)">
+
+<button onclick="withdraw()">Submit Withdraw</button>
+</div>
+
+<div class="card">
+<h3>My Withdraw History</h3>
+<div id="history"></div>
+</div>
+
+<a href="dashboard.html" style="color:#38bdf8;text-align:center;display:block">⬅ Dashboard</a>
+
+</div>
+
+<script>
+const user = localStorage.getItem("loggedInUser");
+if(!user) location.href="index.html";
+
+function withdraw(){
+  let method=document.getElementById("method").value;
+  let number=document.getElementById("number").value.trim();
+  let amount=Number(document.getElementById("amount").value);
+
+  if(!method||!number||amount<500){
+    alert("সঠিক তথ্য দিন (Min 500)");
+    return;
+  }
+
+  let balance=Number(localStorage.getItem("balance_"+user))||0;
+  if(balance<amount){
+    alert("পর্যাপ্ত ব্যালেন্স নেই");
+    return;
+  }
+
+  let list=JSON.parse(localStorage.getItem("withdrawRequests"))||[];
+
+  list.push({
+    id:Date.now(),
+    user,
+    method,
+    number,
+    amount,
+    status:"PENDING",
+    time:new Date().toLocaleString()
+  });
+
+  localStorage.setItem("withdrawRequests",JSON.stringify(list));
+  alert("Withdraw request submitted!");
+  loadHistory();
+}
+
+function loadHistory(){
+  let list=JSON.parse(localStorage.getItem("withdrawRequests"))||[];
+  let box=document.getElementById("history");
+  box.innerHTML="";
+
+  list.filter(w=>w.user===user).reverse().forEach(w=>{
+    box.innerHTML+=`
+      <div style="margin-bottom:10px;">
+        ৳${w.amount} - ${w.method}<br>
+        <span class="status pending">${w.status}</span>
+      </div>
+    `;
+  });
+}
+
+loadHistory();
+</script>
+
+</body>
+</html>
