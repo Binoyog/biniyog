@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Create Account</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+body{font-family:Poppins,sans-serif;background:#f2f2f2}
+.box{max-width:380px;margin:60px auto;background:#fff;padding:30px;border-radius:18px;text-align:center}
+h2{color:#7b3fbf}
+input{width:100%;padding:12px;margin:10px 0;border:none;border-bottom:2px solid #ccc;font-size:16px}
+button{width:100%;padding:14px;background:#7b3fbf;color:#fff;border:none;border-radius:30px;font-size:16px}
+</style>
+</head>
+<body>
+
+<div class="box">
+  <h2>Create New Account</h2>
+
+  <input type="text" id="name" placeholder="Full Name">
+  <input type="tel" id="phone" placeholder="Mobile Number">
+  <input type="password" id="pass" placeholder="Password">
+
+  <button onclick="signup()">CREATE ACCOUNT</button>
+</div>
+
+<script>
+function signup(){
+  let name=document.getElementById("name").value;
+  let phone=document.getElementById("phone").value;
+  let pass=document.getElementById("pass").value;
+
+  if(phone.length<11 || pass.length<4){
+    alert("Invalid data");
+    return;
+  }
+
+  let user={
+    name:name,
+    phone:phone,
+    password:pass,
+    balance:0
+  };
+
+  localStorage.setItem(phone,JSON.stringify(user));
+  alert("Account created successfully");
+  window.location="index.html";
+}
+</script>
+
+</body>
+</html>
