@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Biniyog | Signup</title>
+
+<style>
+body{
+  margin:0;
+  font-family:Arial;
+  height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  background:#0f2027;
+}
+.box{
+  background:#fff;
+  width:90%;
+  max-width:360px;
+  padding:25px;
+  border-radius:10px;
+}
+input,button{
+  width:100%;
+  padding:12px;
+  margin-top:10px;
+}
+button{
+  background:#0f2027;
+  color:#fff;
+  border:none;
+}
+a{
+  display:block;
+  margin-top:12px;
+  text-align:center;
+  text-decoration:none;
+}
+</style>
+</head>
+
+<body>
+<div class="box">
+  <h2>নতুন একাউন্ট</h2>
+
+  <form id="signupForm">
+    <input type="text" placeholder="নাম" required>
+    <input type="tel" placeholder="01XXXXXXXXX" required>
+    <input type="password" placeholder="পাসওয়ার্ড" required>
+    <input type="password" placeholder="কনফার্ম পাসওয়ার্ড" required>
+    <button type="submit">একাউন্ট তৈরি করুন</button>
+  </form>
+
+  <a href="index.html">লগইনে ফিরে যান</a>
+</div>
+
+<script>
+document.getElementById("signupForm").onsubmit = function(e){
+  e.preventDefault();
+  alert("Signup কাজ করছে ✅");
+};
+</script>
+</body>
+</html>
