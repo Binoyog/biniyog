@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<title>Biniyog | Dashboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body{margin:0;font-family:Arial;background:#f1f5f9}
+.header{background:#1e293b;color:#fff;padding:15px;text-align:center}
+.card{background:#fff;margin:15px;padding:15px;border-radius:12px}
+.balance{font-size:32px;font-weight:bold;color:#16a34a}
+.row{display:flex;justify-content:space-between;margin:6px 0}
+.menu a{
+  display:block;
+  text-decoration:none;
+  padding:12px;
+  border-radius:8px;
+  background:#e2e8f0;
+  color:#000;
+  margin-bottom:8px;
+  text-align:center;
+  font-weight:bold;
+}
+.menu a:hover{background:#cbd5f5}
+.logout{color:red;text-align:center;margin:15px}
+</style>
+</head>
+
+<body>
+
+<script>
+const user = localStorage.getItem("loggedInUser");
+if(!user){ location.href="index.html"; }
+</script>
+
+<div class="header">
+<h2>📊 Dashboard</h2>
+<p>Welcome: <b id="userPhone"></b></p>
+</div>
+
+<!-- BALANCE -->
+<div class="card">
+<div>বর্তমান ব্যালেন্স</div>
+<div class="balance">৳ <span id="balance">0</span></div>
+</div>
+
+<!-- SUMMARY -->
+<div class="card">
+<h3>📈 Investment Summary</h3>
+<div class="row">
+<span>Active Plans</span>
+<span id="activePlans">0</span>
+</div>
+<div class="row">
+<span>Total Earned</span>
+<span>৳ <span id="totalEarned">0</span></span>
+</div>
+<div class="row">
+<span>Daily Income</span>
+<span>৳ <span id="dailyIncome">0</span></span>
+</div>
+</div>
+
+<!-- MENU -->
+<div class="card menu">
+<a href="deposit.html">➕ Deposit</a>
+<a href="withdraw.html">➖ Withdraw</a>
+<a href="investment.html">📊 Investment Plans</a>
+<a href="my-investments.html">📈 My Investments</a>
+<a href="balance.html">💰 Balance & History</a>
+</div>
+
+<div class="logout">
+<a href="#" onclick="logout()">Logout</a>
+</div>
+
+<script>
+document.getElementById("userPhone").innerText = user;
+
+function getBalance(){
+  let deposits = JSON.parse(localStorage.getItem("deposits"))||[];
+  let withdraws = JSON.parse(localStorage.getItem("withdraws"))||[];
+  let d=0,w=0;
+
+  deposits.filter(x=>x.user===user)
+    .forEach(x=>d+=Number(x.amount));
+
+  withdraws.filter(x=>x.user===user && x.status==="approved")
+    .forEach(x=>w+=Number(x.amount));
+
+  return d-w;
+}
+
+function loadDashboard(){
+  document.getElementById("balance").innerText = getBalance();
+
+  let investments = JSON.parse(localStorage.getItem("investments"))||[];
+  let active=0, earned=0, daily=0;
+
+  investments.filter(i=>i.user===user).forEach(i=>{
+    earned += Number(i.earned||0);
+    if(i.status==="active"){
+      active++;
+      daily += Number(i.daily);
+    }
+  });
+
+  document.getElementById("activePlans").innerText = active;
+  document.getElementById("totalEarned").innerText = earned;
+  document.getElementById("dailyIncome").innerText = daily;
+}
+
+function logout(){
+  localStorage.removeItem("loggedInUser");
+  location.href="index.html";
+}
+
+loadDashboard();
+</script>
+
+</body>
+</html>
