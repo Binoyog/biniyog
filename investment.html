@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<title>Biniyog | Investment Plan</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body{
+  margin:0;
+  font-family:Arial, sans-serif;
+  background:#0f172a;
+  color:#fff;
+}
+header{
+  background:#020617;
+  padding:15px;
+  text-align:center;
+  font-size:20px;
+  font-weight:bold;
+}
+.container{
+  padding:15px;
+}
+.card{
+  background:#020617;
+  padding:15px;
+  border-radius:10px;
+  margin-bottom:15px;
+  box-shadow:0 0 10px rgba(0,0,0,0.5);
+}
+.plan-title{
+  font-size:18px;
+  color:#38bdf8;
+  margin-bottom:8px;
+}
+.plan-info{
+  font-size:14px;
+  margin-bottom:10px;
+}
+button{
+  width:100%;
+  padding:12px;
+  border:none;
+  border-radius:8px;
+  font-weight:bold;
+  background:#22c55e;
+  cursor:pointer;
+}
+.balance{
+  font-size:22px;
+  color:#22c55e;
+  font-weight:bold;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+📈 Investment Plans
+</header>
+
+<div class="container">
+
+<div class="card">
+  <div>আপনার ব্যালেন্স</div>
+  <div class="balance">৳ <span id="balance">0</span></div>
+</div>
+
+<!-- PLAN 1 -->
+<div class="card">
+  <div class="plan-title">Starter Plan</div>
+  <div class="plan-info">
+    💰 Amount: ৳500<br>
+    📅 Duration: 20 Days<br>
+    📈 Daily Profit: 2%<br>
+    💵 Total Profit: ৳200
+  </div>
+  <button onclick="buyPlan(500,2,20)">Buy Now</button>
+</div>
+
+<!-- PLAN 2 -->
+<div class="card">
+  <div class="plan-title">Standard Plan</div>
+  <div class="plan-info">
+    💰 Amount: ৳1000<br>
+    📅 Duration: 30 Days<br>
+    📈 Daily Profit: 3%<br>
+    💵 Total Profit: ৳900
+  </div>
+  <button onclick="buyPlan(1000,3,30)">Buy Now</button>
+</div>
+
+<!-- PLAN 3 -->
+<div class="card">
+  <div class="plan-title">Premium Plan</div>
+  <div class="plan-info">
+    💰 Amount: ৳3000<br>
+    📅 Duration: 30 Days<br>
+    📈 Daily Profit: 4%<br>
+    💵 Total Profit: ৳3600
+  </div>
+  <button onclick="buyPlan(3000,4,30)">Buy Now</button>
+</div>
+
+</div>
+
+<script>
+/* ======================
+   LOGIN CHECK
+====================== */
+const user = localStorage.getItem("loggedInUser");
+if(!user){
+  location.href = "index.html";
+}
+
+/* ======================
+   LOAD BALANCE
+====================== */
+let balance = Number(localStorage.getItem("balance_"+user)) || 0;
+document.getElementById("balance").innerText = balance;
+
+/* ======================
+   BUY PLAN
+====================== */
+function buyPlan(amount, percent, days){
+  let balance = Number(localStorage.getItem("balance_"+user)) || 0;
+
+  if(balance < amount){
+    alert("❌ পর্যাপ্ত ব্যালেন্স নেই");
+    return;
+  }
+
+  balance -= amount;
+  localStorage.setItem("balance_"+user, balance);
+
+  let investments = JSON.parse(localStorage.getItem("investments")) || [];
+
+  investments.push({
+    user: user,
+    amount: amount,
+    percent: percent,
+    days: days,
+    daily: (amount * percent) / 100,
+    start: Date.now(),
+    earned: 0
+  });
+
+  localStorage.setItem("investments", JSON.stringify(investments));
+
+  alert("✅ Investment Successful!");
+  location.href = "dashboard.html";
+}
+</script>
+
+</body>
+</html>
