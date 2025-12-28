@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Biniyog Dashboard</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Poppins',sans-serif;
+}
+body{
+    background:#f2f2f2;
+}
+
+/* TOP CARD */
+.top-card{
+    background:#d81b60;
+    color:#fff;
+    padding:20px;
+    border-radius:0 0 20px 20px;
+}
+.top-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+}
+.profile{
+    display:flex;
+    align-items:center;
+    gap:12px;
+}
+.profile img{
+    width:55px;
+    height:55px;
+    border-radius:50%;
+}
+.balance-btn{
+    margin-top:15px;
+    background:#fff;
+    color:#d81b60;
+    padding:10px 22px;
+    border-radius:30px;
+    display:inline-block;
+    font-weight:600;
+}
+
+/* NOTICE */
+.notice{
+    background:#ff9800;
+    color:#fff;
+    margin:15px;
+    padding:15px;
+    border-radius:12px;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    font-weight:600;
+}
+
+/* GRID */
+.grid{
+    background:#fff;
+    margin:15px;
+    padding:25px 10px;
+    border-radius:20px;
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:25px 10px;
+    text-align:center;
+}
+
+/* BIG ICONS */
+.icon{
+    width:85px;
+    height:85px;
+    background:#d81b60;
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    margin:0 auto 10px;
+    color:#fff;
+    font-size:34px;
+}
+.item span{
+    font-size:15px;
+    font-weight:600;
+}
+
+/* IMAGE SECTION */
+.image-section{
+    margin:15px;
+    background:#fff;
+    border-radius:20px;
+    overflow:hidden;
+}
+.image-section img{
+    width:100%;
+    display:block;
+}
+
+/* LOGOUT */
+.logout{
+    font-size:22px;
+}
+</style>
+</head>
+
+<body>
+
+<!-- TOP -->
+<div class="top-card">
+    <div class="top-row">
+        <div class="profile">
+            <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png">
+            <h3>Profile</h3>
+        </div>
+        <i class="fas fa-sign-out-alt logout"></i>
+    </div>
+
+    <div class="balance-btn">
+        <i class="fas fa-wallet"></i> Tap To Balance
+    </div>
+</div>
+
+<!-- NOTICE -->
+<div class="notice">
+    <i class="fas fa-circle-info"></i>
+    Welcome to Biniyog Dashboard
+</div>
+
+<!-- ICON GRID -->
+<div class="grid">
+
+    <div class="item">
+        <div class="icon"><i class="fas fa-list-check"></i></div>
+        <span>Task</span>
+    </div>
+
+    <div class="item">
+        <div class="icon"><i class="fas fa-money-bill-wave"></i></div>
+        <span>Deposit</span>
+    </div>
+
+    <div class="item">
+        <div class="icon"><i class="fas fa-wallet"></i></div>
+        <span>Withdraw</span>
+    </div>
+
+    <div class="item">
+        <div class="icon"><i class="fas fa-credit-card"></i></div>
+        <span>Plan</span>
+    </div>
+
+    <div class="item">
+        <div class="icon"><i class="fas fa-user"></i></div>
+        <span>Profile</span>
+    </div>
+
+    <div class="item">
+        <div class="icon"><i class="fas fa-users"></i></div>
+        <span>Refer</span>
+    </div>
+
+    <div class="item">
+        <div class="icon"><i class="fas fa-right-left"></i></div>
+        <span>Transaction</span>
+    </div>
+
+    <div class="item">
+        <div class="icon"><i class="fas fa-circle-info"></i></div>
+        <span>About</span>
+    </div>
+
+</div>
+
+<!-- IMAGE ADDED -->
+<div class="image-section">
+    <img src="windmill.jpg" alt="Investment Image">
+</div>
+
+</body>
+</html>
