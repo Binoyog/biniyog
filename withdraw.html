@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <title>Withdraw | Biniyog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      background: #020617;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .box {
+      background: #0f172a;
+      padding: 20px;
+      border-radius: 8px;
+      max-width: 400px;
+      margin: auto;
+    }
+    input, select, button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      border-radius: 5px;
+      border: none;
+      font-size: 15px;
+    }
+    input, select {
+      background: #020617;
+      color: #fff;
+      border: 1px solid #334155;
+    }
+    button {
+      background: #22c55e;
+      color: #000;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .msg {
+      margin-top: 15px;
+      text-align: center;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Withdraw Request</h1>
+
+<div class="box">
+  <p><b>Your Balance:</b> ৳<span id="balance">0</span></p>
+
+  <select id="method">
+    <option value="">Select Method</option>
+    <option value="Bkash">Bkash</option>
+    <option value="Nagad">Nagad</option>
+    <option value="Rocket">Rocket</option>
+  </select>
+
+  <input type="text" id="account" placeholder="Payment Number">
+  <input type="number" id="amount" placeholder="Withdraw Amount">
+
+  <button onclick="submitWithdraw()">Submit Request</button>
+
+  <div class="msg" id="msg"></div>
+</div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+  import {
+    getFirestore,
+    doc,
+    getDoc,
+    addDoc,
+    collection,
+    serverTimestamp
+  } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyCyx9CwRF03c13QPqmelXDMDiO06f2N2bE",
+    authDomain: "biniyog-e1ab6.firebaseapp.com",
+    projectId: "biniyog-e1ab6",
+    storageBucket: "biniyog-e1ab6.firebasestorage.app",
+    messagingSenderId: "926960872938",
+    appId: "1:926960872938:web:9fad54fc194ad7871e9693",
+    measurementId: "G-LBHBQ2S91V"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  const userId = localStorage.getItem("uid"); // login এর সময় uid save করা থাকতে হবে
+
+  if (!userId) {
+    alert("Please login first");
+    location.href = "login.html";
+  }
+
+  const balanceEl = document.getElementById("balance");
+  const msg = document.getElementById("msg");
+
+  // Load balance
+  async function loadBalance() {
+    const snap = await getDoc(doc(db, "users", userId));
+    if (snap.exists()) {
+      balanceEl.innerText = snap.data().balance || 0;
+    }
+  }
+
+  loadBalance();
+
+  async function submitWithdraw() {
+    const method = method.value;
+    const account = document.getElementById("account").value.trim();
+    const amount = Number(document.getElementById("amount").value);
+
+    if (!method || !account || amount <= 0) {
+      msg.innerText = "সব তথ্য ঠিকভাবে পূরণ করুন";
+      msg.style.color = "red";
+      return;
+    }
+
+    const userSnap = await getDoc(doc(db, "users", userId));
+    const balance = userSnap.data().balance || 0;
+
+    if (amount > balance) {
+      msg.innerText = "পর্যাপ্ত ব্যালেন্স নেই";
+      msg.style.color = "red";
+      return;
+    }
+
+    await addDoc(collection(db, "withdraw_requests"), {
+      userId,
+      amount,
+      method,
+      account,
+      status: "pending",
+      createdAt: serverTimestamp()
+    });
+
+    msg.innerText = "Withdraw request submitted (Pending)";
+    msg.style.color = "lightgreen";
+
+    document.getElementById("amount").value = "";
+    document.getElementById("account").value = "";
+  }
+</script>
+
+</body>
+</html>
