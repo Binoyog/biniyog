@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>বিনিয়োগ | Sign Up</title>
+
+  <style>
+    *{
+      box-sizing:border-box;
+      font-family:Arial, Helvetica, sans-serif;
+    }
+    body{
+      margin:0;
+      background:#0f1312;
+      color:#fff;
+    }
+    .topbar{
+      background:#0b0f0e;
+      padding:14px;
+      text-align:center;
+      font-size:22px;
+      font-weight:bold;
+      color:#1abc9c;
+      border-bottom:1px solid #1f2a27;
+    }
+    .container{
+      max-width:420px;
+      margin:auto;
+      padding:20px;
+    }
+    h1{
+      text-align:center;
+      margin-bottom:25px;
+    }
+    .form-group{
+      margin-bottom:15px;
+    }
+    .form-group label{
+      display:block;
+      margin-bottom:6px;
+      color:#aaa;
+    }
+    .form-group input{
+      width:100%;
+      padding:12px;
+      background:#1a1f1e;
+      border:none;
+      border-radius:6px;
+      color:#fff;
+      font-size:16px;
+    }
+    .btn{
+      width:100%;
+      padding:14px;
+      background:#1abc9c;
+      border:none;
+      border-radius:6px;
+      font-size:18px;
+      color:#000;
+      cursor:pointer;
+      margin-top:10px;
+    }
+    .btn:hover{
+      background:#16a085;
+    }
+    .error{
+      color:#ff6b6b;
+      font-size:14px;
+      margin-top:10px;
+      text-align:center;
+    }
+    .success{
+      color:#1abc9c;
+      font-size:15px;
+      margin-top:10px;
+      text-align:center;
+    }
+    .login-link{
+      text-align:center;
+      margin-top:20px;
+    }
+    .login-link a{
+      color:#1abc9c;
+      text-decoration:none;
+      font-size:14px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="topbar">বিনিয়োগ</div>
+
+<div class="container">
+  <h1>Create New Account</h1>
+
+  <div class="form-group">
+    <label>Name</label>
+    <input type="text" id="name" placeholder="Enter your name">
+  </div>
+
+  <div class="form-group">
+    <label>Phone Number</label>
+    <input type="text" id="phone" placeholder="01XXXXXXXXX">
+  </div>
+
+  <div class="form-group">
+    <label>New Password</label>
+    <input type="password" id="password" placeholder="New password">
+  </div>
+
+  <div class="form-group">
+    <label>Repeat New Password</label>
+    <input type="password" id="repassword" placeholder="Repeat password">
+  </div>
+
+  <button class="btn" onclick="register()">Sign Up</button>
+
+  <div id="msg"></div>
+
+  <div class="login-link">
+    Already have an account? <a href="index.html">Log in</a>
+  </div>
+</div>
+
+<script>
+  function register(){
+    const name = document.getElementById('name').value.trim();
+    const phone = document.getElementById('phone').value.trim();
+    const pass = document.getElementById('password').value;
+    const repass = document.getElementById('repassword').value;
+    const msg = document.getElementById('msg');
+
+    msg.innerHTML = "";
+
+    if(name === "" || phone === "" || pass === "" || repass === ""){
+      msg.innerHTML = "<div class='error'>সব ফিল্ড পূরণ করুন</div>";
+      return;
+    }
+
+    if(phone.length < 11){
+      msg.innerHTML = "<div class='error'>সঠিক মোবাইল নাম্বার দিন</div>";
+      return;
+    }
+
+    if(pass.length < 6){
+      msg.innerHTML = "<div class='error'>পাসওয়ার্ড কমপক্ষে ৬ ডিজিট হতে হবে</div>";
+      return;
+    }
+
+    if(pass !== repass){
+      msg.innerHTML = "<div class='error'>পাসওয়ার্ড মিলছে না</div>";
+      return;
+    }
+
+    // Demo success (later Firebase will be added)
+    msg.innerHTML = "<div class='success'>Account created successfully! Redirecting...</div>";
+
+    setTimeout(()=>{
+      window.location.href = "index.html";
+    }, 1500);
+  }
+</script>
+
+</body>
+</html>
