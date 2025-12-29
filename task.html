@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Task</title>
+
+<style>
+body{
+    margin:0;
+    font-family:Arial, sans-serif;
+    background:#87CEEB;
+}
+.header{
+    background:#0288d1;
+    color:#fff;
+    text-align:center;
+    padding:15px;
+    font-size:22px;
+}
+.card{
+    background:#fff;
+    margin:20px;
+    padding:20px;
+    border-radius:12px;
+}
+.card h3{
+    margin-top:0;
+    color:#0288d1;
+}
+.balance{
+    font-size:18px;
+    font-weight:bold;
+    color:green;
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">My Task</div>
+
+<div class="card" id="taskBox">
+    লোড হচ্ছে...
+</div>
+
+<script>
+let balance = Number(localStorage.getItem("balance")) || 0;
+let plan = JSON.parse(localStorage.getItem("activePlan"));
+
+function saveBalance(val){
+    localStorage.setItem("balance", val);
+}
+
+// 🔥 DAILY INCOME SYSTEM
+function dailyIncomeCheck(){
+
+    if(!plan){
+        document.getElementById("taskBox").innerHTML = "❌ কোনো একটিভ প্লান নেই";
+        return;
+    }
+
+    let today = new Date().toDateString();
+    let lastPaid = localStorage.getItem("lastIncomeDate");
+
+    let endDate = new Date(plan.endDate);
+    let now = new Date();
+
+    // ⛔ প্লান শেষ
+    if(now > endDate){
+        document.getElementById("taskBox").innerHTML = `
+        <h3>${plan.name}</h3>
+        <p>প্লান মূল্য: ৳${plan.price}</p>
+        <p>মেয়াদ শেষ হয়েছে</p>
+        <p class="balance">বর্তমান ব্যালেন্স: ৳${balance}</p>`;
+        return;
+    }
+
+    // ✅ প্রতিদিন একবার ইনকাম যোগ
+    if(lastPaid !== today){
+        balance += plan.dailyIncome;
+        saveBalance(balance);
+        localStorage.setItem("lastIncomeDate", today);
+    }
+
+    document.getElementById("taskBox").innerHTML = `
+        <h3>${plan.name}</h3>
+        <p>প্লান মূল্য: ৳${plan.price}</p>
+        <p>কেনার তারিখ: ${plan.buyDate}</p>
+        <p>মেয়াদ শেষ: ${plan.endDate}</p>
+        <p>দৈনিক আয়: ৳${plan.dailyIncome}</p>
+        <p class="balance">বর্তমান ব্যালেন্স: ৳${balance}</p>
+    `;
+}
+
+dailyIncomeCheck();
+</script>
+
+</body>
+</html>
