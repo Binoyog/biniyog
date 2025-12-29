@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Dashboard</title>
+
+<style>
+body{
+  margin:0;
+  font-family:Arial;
+  background:linear-gradient(135deg,#020617,#0f172a);
+  color:#fff;
+}
+.header{
+  padding:16px;
+  text-align:center;
+  font-size:22px;
+  background:#020617;
+  color:#22c55e;
+}
+.grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:18px;
+  padding:20px;
+}
+.card{
+  background:#020617;
+  border-radius:18px;
+  padding:30px 10px;
+  text-align:center;
+  cursor:pointer;
+  transition:.2s;
+}
+.card:hover{
+  transform:scale(1.05);
+  background:#020617dd;
+}
+.icon{
+  font-size:42px;
+  margin-bottom:10px;
+}
+.label{
+  font-size:16px;
+}
+.logout{
+  margin:20px;
+  padding:14px;
+  text-align:center;
+  background:#ef4444;
+  border-radius:12px;
+  cursor:pointer;
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">👑 Admin Dashboard</div>
+
+<div class="grid">
+
+  <div class="card" onclick="go('admin_task.html')">
+    <div class="icon">📋</div>
+    <div class="label">গ্রাহক Task</div>
+  </div>
+
+  <div class="card" onclick="go('admin_deposit.html')">
+    <div class="icon">💰</div>
+    <div class="label">গ্রাহক Deposit</div>
+  </div>
+
+  <div class="card" onclick="go('admin_withdraw.html')">
+    <div class="icon">🏧</div>
+    <div class="label">গ্রাহক Withdraw</div>
+  </div>
+
+  <div class="card" onclick="go('admin_refer.html')">
+    <div class="icon">👥</div>
+    <div class="label">গ্রাহক Refer</div>
+  </div>
+
+</div>
+
+<div class="logout" onclick="logout()">🚪 Logout</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+import { getAuth, signOut, onAuthStateChanged } 
+from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+
+const app = initializeApp({
+  apiKey:"AIzaSyBFsTzlRPoWHVXEHbKrPdwxslxZGa7Kqfw",
+  projectId:"biniyog-95d00"
+});
+const auth = getAuth(app);
+
+onAuthStateChanged(auth,user=>{
+  if(!user || user.email!=="admin@biniyog.com"){
+    location.href="index.html";
+  }
+});
+
+window.go = (page)=> location.href = page;
+window.logout = ()=> signOut(auth).then(()=>location.href="index.html");
+</script>
+
+</body>
+</html>
