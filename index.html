@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Biniyog | Login</title>
+
+<style>
+body{
+  margin:0;
+  font-family:Arial, Helvetica, sans-serif;
+  background:#0f1312;
+  color:#fff;
+}
+.header{
+  display:flex;
+  align-items:center;
+  padding:15px;
+  background:#0b0f0e;
+  font-size:24px;
+  font-weight:bold;
+  color:#1abc9c;
+}
+.container{
+  max-width:420px;
+  margin:auto;
+  padding:20px;
+}
+.tabs{
+  display:flex;
+  margin-bottom:20px;
+}
+.tab{
+  flex:1;
+  text-align:center;
+  padding:12px;
+  cursor:pointer;
+  border-bottom:3px solid #333;
+  color:#aaa;
+}
+.tab.active{
+  border-bottom:3px solid #1abc9c;
+  color:#1abc9c;
+}
+label{color:#aaa}
+input{
+  width:100%;
+  padding:12px;
+  margin:8px 0 15px;
+  background:#1a1f1e;
+  border:none;
+  border-radius:6px;
+  color:#fff;
+  font-size:16px;
+}
+button{
+  width:100%;
+  padding:14px;
+  background:#1abc9c;
+  border:none;
+  border-radius:6px;
+  font-size:18px;
+  cursor:pointer;
+}
+.link{
+  color:#1abc9c;
+  text-align:right;
+  cursor:pointer;
+  margin-bottom:15px;
+}
+.msg{
+  text-align:center;
+  margin-top:12px;
+}
+.error{color:#ff6b6b}
+.success{color:#1abc9c}
+.hide{display:none}
+</style>
+</head>
+
+<body>
+
+<div class="header">Biniyog</div>
+
+<div class="container">
+
+<div class="tabs">
+  <div class="tab active" onclick="showLogin()">Log in</div>
+  <div class="tab" onclick="showSignup()">Sign up</div>
+</div>
+
+<!-- LOGIN -->
+<div id="loginBox">
+  <label>Mobile Number</label>
+  <input type="text" id="loginMobile" placeholder="01XXXXXXXXX">
+
+  <label>Password</label>
+  <input type="password" id="loginPass" placeholder="Password">
+
+  <div class="link" onclick="forgotPassword()">Forgot password?</div>
+
+  <button onclick="login()">Log in</button>
+  <div id="loginMsg" class="msg"></div>
+</div>
+
+<!-- SIGNUP -->
+<div id="signupBox" class="hide">
+  <label>Name</label>
+  <input type="text" id="suName">
+
+  <label>Mobile Number</label>
+  <input type="text" id="suMobile">
+
+  <label>New Password</label>
+  <input type="password" id="suPass">
+
+  <label>Repeat New Password</label>
+  <input type="password" id="suPass2">
+
+  <button onclick="signup()">Create Account</button>
+  <div id="signupMsg" class="msg"></div>
+</div>
+
+</div>
+
+<script>
+/* simple storage */
+let users = JSON.parse(localStorage.getItem("biniyog_users")) || {};
+
+function showLogin(){
+  document.getElementById("loginBox").classList.remove("hide");
+  document.getElementById("signupBox").classList.add("hide");
+  document.querySelectorAll(".tab")[0].classList.add("active");
+  document.querySelectorAll(".tab")[1].classList.remove("active");
+}
+
+function showSignup(){
+  document.getElementById("signupBox").classList.remove("hide");
+  document.getElementById("loginBox").classList.add("hide");
+  document.querySelectorAll(".tab")[1].classList.add("active");
+  document.querySelectorAll(".tab")[0].classList.remove("active");
+}
+
+/* SIGNUP */
+function signup(){
+  const name = suName.value.trim();
+  const mobile = suMobile.value.trim();
+  const p1 = suPass.value;
+  const p2 = suPass2.value;
+  const msg = signupMsg;
+
+  msg.innerHTML = "";
+
+  if(!name || !mobile || !p1 || !p2){
+    msg.innerHTML = "<div class='error'>সব তথ্য দিন</div>";
+    return;
+  }
+  if(p1 !== p2){
+    msg.innerHTML = "<div class='error'>Password মিলেনি</div>";
+    return;
+  }
+  users[mobile] = {name, pass:p1};
+  localStorage.setItem("biniyog_users", JSON.stringify(users));
+
+  msg.innerHTML = "<div class='success'>Account তৈরি হয়েছে</div>";
+  setTimeout(showLogin, 1200);
+}
+
+/* LOGIN */
+function login(){
+  const mobile = loginMobile.value.trim();
+  const pass = loginPass.value;
+  const msg = loginMsg;
+
+  msg.innerHTML = "";
+
+  if(users[mobile] && users[mobile].pass === pass){
+    window.location.href = "dashboard.html";
+  }else{
+    msg.innerHTML = "<div class='error'>ভুল Mobile বা Password</div>";
+  }
+}
+
+/* FORGOT PASSWORD */
+function forgotPassword(){
+  const mobile = prompt("আপনার Mobile Number লিখুন");
+  if(!mobile || !users[mobile]){
+    alert("এই Mobile নাম্বার পাওয়া যায়নি");
+    return;
+  }
+  const newPass = Math.random().toString(36).slice(-8);
+  users[mobile].pass = newPass;
+  localStorage.setItem("biniyog_users", JSON.stringify(users));
+  alert("নতুন Password: " + newPass);
+}
+</script>
+
+</body>
+</html>
