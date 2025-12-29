@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Login | Biniyog</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:#f3f3f3;
+}
+.container{
+  max-width:380px;
+  margin:auto;
+  padding:40px 25px;
+  text-align:center;
+}
+.logo{
+  width:120px;
+  margin:auto;
+}
+h2{
+  color:#7b2cbf;
+}
+.input-box{
+  display:flex;
+  align-items:center;
+  background:#fff;
+  margin-top:15px;
+  padding:12px;
+  border-radius:8px;
+}
+.input-box input{
+  border:none;
+  outline:none;
+  flex:1;
+  font-size:16px;
+}
+.login-btn{
+  width:100%;
+  padding:14px;
+  margin-top:20px;
+  background:#7b2cbf;
+  color:#fff;
+  border:none;
+  border-radius:30px;
+  font-size:16px;
+}
+.link{
+  margin-top:15px;
+  color:#7b2cbf;
+  display:block;
+  text-decoration:none;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <img src="https://i.imgur.com/9YQ9ZQk.png" class="logo">
+  <h2>Welcome</h2>
+
+  <div class="input-box">
+    📞 <input id="mobile" placeholder="Mobile Number">
+  </div>
+
+  <div class="input-box">
+    🔒 <input id="password" type="password" placeholder="Password">
+  </div>
+
+  <button class="login-btn" onclick="login()">LOGIN</button>
+
+  <a class="link" href="forgot.html">Forgot password?</a>
+  <a class="link" href="signup.html">Open new account</a>
+
+  <p id="msg"></p>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+
+const firebaseConfig = {
+ apiKey: "AIzaSyBFsTzlRPoWHVXEHbKrPdwxslxZGa7Kqfw",
+ authDomain: "biniyog-95d00.firebaseapp.com",
+ projectId: "biniyog-95d00"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+window.login = async ()=>{
+  const ref = doc(db,"users",mobile.value);
+  const snap = await getDoc(ref);
+  if(!snap.exists()) return msg.innerText="User not found";
+  if(snap.data().password !== password.value)
+    return msg.innerText="Wrong password";
+
+  localStorage.setItem("mobile",mobile.value);
+  location.href="dashboard.html";
+}
+</script>
+</body>
+</html>
