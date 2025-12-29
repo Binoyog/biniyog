@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Biniyog | Signup</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+body{font-family:Arial;background:#f3f3f3;display:flex;justify-content:center;align-items:center;height:100vh}
+.box{background:#fff;padding:25px;width:340px;border-radius:12px;text-align:center}
+input,button{width:100%;padding:12px;margin:8px 0;border-radius:8px;border:1px solid #ccc}
+button{background:#7a2fbf;color:#fff;border:none}
+</style>
+</head>
+<body>
+
+<div class="box">
+<h2>Create Account</h2>
+<input id="name" placeholder="Full Name">
+<input id="mobile" placeholder="Mobile Number">
+<button onclick="signup()">Create</button>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+
+const firebaseConfig = {
+ apiKey:"AIzaSyBFsTzlRPoWHVXEHbKrPdwxslxZGa7Kqfw",
+ authDomain:"biniyog-95d00.firebaseapp.com",
+ projectId:"biniyog-95d00"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+window.signup = async () => {
+ const name = name.value;
+ const mobile = mobile.value;
+ const password = Math.floor(100000+Math.random()*900000).toString();
+
+ await setDoc(doc(db,"users",mobile),{
+  name,
+  password,
+  balance:0,
+  status:"active",
+  created:new Date()
+ });
+
+ alert("Account created\nPassword: "+password);
+ location.href="index.html";
+};
+</script>
+</body>
+</html>
