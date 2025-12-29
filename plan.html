@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Investment Plan</title>
+
+<style>
+body{
+    margin:0;
+    font-family:Arial, sans-serif;
+    background:#fdecec;
+}
+.header{
+    text-align:center;
+    padding:15px;
+    font-size:22px;
+    font-weight:bold;
+}
+.plan{
+    background:#b23b1e;
+    color:#fff;
+    margin:15px;
+    padding:20px;
+    border-radius:12px;
+    text-align:center;
+}
+.plan button{
+    background:#ffc107;
+    border:none;
+    padding:10px 25px;
+    border-radius:8px;
+    font-size:16px;
+    font-weight:bold;
+    cursor:pointer;
+}
+.plan button:active{
+    transform:scale(0.97);
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">ইনভেস্টমেন্ট প্লান</div>
+
+<!-- ৫০০ টাকার প্লান -->
+<div class="plan">
+    <h3>মিনি প্লান</h3>
+    <p>বিনিয়োগ: ৳500</p>
+    <p>২৪ ঘন্টায় আয়: ৳90</p>
+    <p>মেয়াদ: ১০ দিন</p>
+    <button onclick="buyPlan('মিনি প্লান',500,90,10)">কিনুন</button>
+</div>
+
+<!-- ১০০০ টাকার প্লান -->
+<div class="plan">
+    <h3>উইন্ডমিল প্লান</h3>
+    <p>বিনিয়োগ: ৳1000</p>
+    <p>২৪ ঘন্টায় আয়: ৳197</p>
+    <p>মেয়াদ: ১০ দিন</p>
+    <button onclick="buyPlan('উইন্ডমিল প্লান',1000,197,10)">কিনুন</button>
+</div>
+
+<!-- ২০০০ টাকার প্লান -->
+<div class="plan">
+    <h3>শেয়ার প্লান</h3>
+    <p>বিনিয়োগ: ৳2000</p>
+    <p>২৪ ঘন্টায় আয়: ৳470</p>
+    <p>মেয়াদ: ১০ দিন</p>
+    <button onclick="buyPlan('শেয়ার প্লান',2000,470,10)">কিনুন</button>
+</div>
+
+<!-- ৫০০০ টাকার প্লান -->
+<div class="plan">
+    <h3>শেয়ার প্লান</h3>
+    <p>বিনিয়োগ: ৳5000</p>
+    <p>২৪ ঘন্টায় আয়: ৳1280</p>
+    <p>মেয়াদ: ১০ দিন</p>
+    <button onclick="buyPlan('শেয়ার প্লান',5000,1280,10)">কিনুন</button>
+</div>
+
+<!-- ২০০০০ টাকার প্লান -->
+<div class="plan">
+    <h3>ন্যাশনাল প্লান</h3>
+    <p>বিনিয়োগ: ৳20000</p>
+    <p>২৪ ঘন্টায় আয়: ৳5500</p>
+    <p>মেয়াদ: ৬ দিন</p>
+    <button onclick="buyPlan('ন্যাশনাল প্লান',20000,5500,6)">কিনুন</button>
+</div>
+
+<!-- ✅ ৫০০০০ টাকার মেগা প্লান -->
+<div class="plan">
+    <h3>মেগা প্লান</h3>
+    <p>বিনিয়োগ: ৳50,000</p>
+    <p>২৪ ঘন্টায় আয়: ৳12,875</p>
+    <p>মেয়াদ: ৭ দিন</p>
+    <button onclick="buyPlan('মেগা প্লান',50000,12875,7)">কিনুন</button>
+</div>
+
+<script>
+// ডিফল্ট ব্যালেন্স
+if(localStorage.getItem("balance") === null){
+    localStorage.setItem("balance", 100);
+}
+
+function buyPlan(name, price, dailyIncome, days){
+
+    let balance = Number(localStorage.getItem("balance"));
+
+    // 🔒 ব্যালেন্স চেক
+    if(balance < price){
+        alert("❌ পর্যাপ্ত ব্যালেন্স নেই। আগে ডিপোজিট করুন।");
+        return;
+    }
+
+    // ব্যালেন্স কাটা
+    balance -= price;
+    localStorage.setItem("balance", balance);
+
+    // তারিখ সেট
+    let buyDate = new Date();
+    let endDate = new Date();
+    endDate.setDate(buyDate.getDate() + days);
+
+    // Active plan সেভ
+    let planData = {
+        name: name,
+        price: price,
+        dailyIncome: dailyIncome,
+        buyDate: buyDate.toDateString(),
+        endDate: endDate.toDateString()
+    };
+
+    localStorage.setItem("activePlan", JSON.stringify(planData));
+
+    alert("✅ " + name + " সফলভাবে কেনা হয়েছে");
+}
+</script>
+
+</body>
+</html>
