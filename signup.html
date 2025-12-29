@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Create New Account</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f2f2f2;
+    }
+    .box {
+      max-width: 400px;
+      margin: 50px auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    h2 {
+      text-align: center;
+    }
+    input, button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      font-size: 16px;
+    }
+    button {
+      background: #0d6efd;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #084298;
+    }
+    .password-box {
+      margin-top: 15px;
+      background: #e9ecef;
+      padding: 10px;
+      border-radius: 5px;
+      display: none;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="box">
+  <h2>Create Account</h2>
+
+  <input type="text" id="name" placeholder="Full Name" required>
+  <input type="tel" id="phone" placeholder="Mobile Number" required>
+
+  <button onclick="signup()">Create Account</button>
+
+  <div class="password-box" id="showPassword">
+    <strong>Your Login Password:</strong>
+    <p id="passwordText"></p>
+  </div>
+</div>
+
+<script>
+  // 🔥 Firebase Config (নিজেরটা বসাবে)
+  const firebaseConfig = {
+    apiKey: "YOUR_API_KEY",
+    authDomain: "YOUR_PROJECT.firebaseapp.com",
+    projectId: "YOUR_PROJECT_ID",
+  };
+
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+
+  // 🔐 Auto password generator
+  function generatePassword() {
+    return Math.random().toString(36).slice(-8);
+  }
+
+  function signup() {
+    const name = document.getElementById("name").value.trim();
+    const phone = document.getElementById("phone").value.trim();
+
+    if (name === "" || phone === "") {
+      alert("সব তথ্য পূরণ করুন");
+      return;
+    }
+
+    const password = generatePassword();
+
+    db.collection("users").add({
+      name: name,
+      phone: phone,
+      password: password,
+      balance: 0,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    })
+    .then(() => {
+      document.getElementById("passwordText").innerText = password;
+      document.getElementById("showPassword").style.display = "block";
+      alert("Account Created Successfully");
+    })
+    .catch((error) => {
+      alert("Error: " + error.message);
+    });
+  }
+</script>
+
+</body>
+</html>
