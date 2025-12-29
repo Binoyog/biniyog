@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Biniyog | Login</title>
+
+<style>
+body{
+  margin:0;
+  font-family: Arial, sans-serif;
+  background:#f3f3f3;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+}
+.box{
+  width:100%;
+  max-width:360px;
+  background:#fff;
+  padding:25px 20px;
+  border-radius:14px;
+  box-shadow:0 8px 20px rgba(0,0,0,.1);
+  text-align:center;
+}
+.logo{
+  width:110px;
+  margin-bottom:10px;
+}
+h2{
+  color:#7a2fbf;
+  margin-bottom:20px;
+}
+.input{
+  display:flex;
+  align-items:center;
+  background:#f6f6f6;
+  border-radius:10px;
+  padding:12px;
+  margin-bottom:15px;
+}
+.input span{
+  font-size:18px;
+  margin-right:8px;
+}
+.input input{
+  border:none;
+  outline:none;
+  width:100%;
+  background:transparent;
+  font-size:15px;
+}
+button{
+  width:100%;
+  border:none;
+  padding:14px;
+  border-radius:30px;
+  background:#7a2fbf;
+  color:#fff;
+  font-size:16px;
+  cursor:pointer;
+}
+button:hover{background:#6826a3;}
+.links{
+  margin-top:18px;
+}
+.links a{
+  display:block;
+  color:#7a2fbf;
+  text-decoration:none;
+  margin:6px 0;
+}
+</style>
+</head>
+
+<body>
+
+<div class="box">
+  <img src="assets/logo.png" class="logo">
+  <h2>Welcome</h2>
+
+  <div class="input">
+    <span>📞</span>
+    <input type="tel" id="mobile" placeholder="Mobile Number">
+  </div>
+
+  <div class="input">
+    <span>🔒</span>
+    <input type="password" id="password" placeholder="Password">
+  </div>
+
+  <button onclick="login()">LOGIN</button>
+
+  <div class="links">
+    <a href="forgot-password.html">Forgot password?</a>
+    <a href="signup.html">Open new account</a>
+  </div>
+</div>
+
+<!-- Firebase + Firestore -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+import { 
+  getFirestore, doc, onSnapshot 
+} from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBFsTzlRPoWHVXEHbKrPdwxslxZGa7Kqfw",
+  authDomain: "biniyog-95d00.firebaseapp.com",
+  projectId: "biniyog-95d00",
+  storageBucket: "biniyog-95d00.firebasestorage.app",
+  messagingSenderId: "523238228802",
+  appId: "1:523238228802:web:a65183bdc4c268f94efedb"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+window.login = function () {
+  const mobile = document.getElementById("mobile").value.trim();
+  const password = document.getElementById("password").value;
+
+  if(!mobile || !password){
+    alert("Mobile & Password required");
+    return;
+  }
+
+  const userRef = doc(db, "users", mobile);
+
+  // 🔥 REAL-TIME LOGIN CHECK
+  onSnapshot(userRef, (docSnap) => {
+    if(!docSnap.exists()){
+      alert("User not found");
+      return;
+    }
+
+    const data = docSnap.data();
+
+    if(data.password !== password){
+      alert("Wrong password");
+      return;
+    }
+
+    // Login success
+    localStorage.setItem("user", mobile);
+    window.location.href = "dashboard.html";
+  });
+};
+</script>
+
+</body>
+</html>
