@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Signup | Biniyog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f6f8;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .card {
+      background: #fff;
+      padding: 25px;
+      width: 100%;
+      max-width: 350px;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #6a1b9a;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 12px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 15px;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      background: #6a1b9a;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      opacity: 0.9;
+    }
+
+    .login-link {
+      text-align: center;
+      margin-top: 15px;
+      font-size: 14px;
+    }
+
+    .login-link a {
+      color: #6a1b9a;
+      text-decoration: none;
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="card">
+    <h2>Open New Account</h2>
+
+    <form id="signupForm">
+      <input
+        type="text"
+        id="name"
+        placeholder="Full Name"
+        required
+      />
+
+      <input
+        type="tel"
+        id="mobile"
+        placeholder="Mobile Number"
+        required
+      />
+
+      <input
+        type="password"
+        id="password"
+        placeholder="New Password"
+        required
+      />
+
+      <input
+        type="password"
+        id="confirmPassword"
+        placeholder="Repeat Password"
+        required
+      />
+
+      <button type="submit">SIGN UP</button>
+    </form>
+
+    <div class="login-link">
+      Already have account?
+      <a href="index.html">Login</a>
+    </div>
+  </div>
+
+  <!-- Auth Logic -->
+  <script type="module" src="js/auth.js"></script>
+
+</body>
+</html>
