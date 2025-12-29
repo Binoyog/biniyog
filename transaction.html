@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Transaction History</title>
+
+<style>
+body{
+    margin:0;
+    font-family:Arial, sans-serif;
+    background:#eef5ff;
+}
+.header{
+    background:#0d47a1;
+    color:#fff;
+    text-align:center;
+    padding:15px;
+    font-size:22px;
+}
+.section{
+    margin:15px;
+}
+.section h2{
+    color:#0d47a1;
+    margin-bottom:10px;
+}
+.card{
+    background:#fff;
+    padding:15px;
+    margin-bottom:12px;
+    border-radius:12px;
+    box-shadow:0 2px 6px rgba(0,0,0,0.2);
+}
+.pending{ color:orange; font-weight:bold; }
+.approved{ color:green; font-weight:bold; }
+.rejected{ color:red; font-weight:bold; }
+.amount{ font-weight:bold; }
+.time{ color:#555; font-size:14px; }
+.empty{
+    text-align:center;
+    color:#777;
+    margin-top:20px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">📑 Transaction History</div>
+
+<div class="section">
+<h2>💰 Deposit History</h2>
+<div id="depositHistory"></div>
+</div>
+
+<div class="section">
+<h2>🏧 Withdraw History</h2>
+<div id="withdrawHistory"></div>
+</div>
+
+<script>
+let deposits = JSON.parse(localStorage.getItem("pendingDeposits")) || [];
+let withdraws = JSON.parse(localStorage.getItem("withdrawRequests")) || [];
+
+function renderDeposits(){
+    let box = document.getElementById("depositHistory");
+    if(deposits.length === 0){
+        box.innerHTML = "<div class='empty'>❌ কোনো ডিপোজিট হিস্ট্রি নেই</div>";
+        return;
+    }
+
+    let html = "";
+    deposits.forEach(d=>{
+        html += `
+        <div class="card">
+            <p class="amount">Amount: ৳${d.amount}</p>
+            <p>Method: ${d.method}</p>
+            <p>Transaction ID: ${d.trxid}</p>
+            <p class="time">${d.date}</p>
+            <p class="${d.status.toLowerCase()}">Status: ${d.status}</p>
+        </div>
+        `;
+    });
+    box.innerHTML = html;
+}
+
+function renderWithdraws(){
+    let box = document.getElementById("withdrawHistory");
+    if(withdraws.length === 0){
+        box.innerHTML = "<div class='empty'>❌ কোনো উইথড্র হিস্ট্রি নেই</div>";
+        return;
+    }
+
+    let html = "";
+    withdraws.forEach(w=>{
+        html += `
+        <div class="card">
+            <p class="amount">Amount: ৳${w.amount}</p>
+            <p>Method: ${w.method}</p>
+            <p>Account: ${w.number}</p>
+            <p class="time">${w.date}</p>
+            <p class="${w.status.toLowerCase()}">Status: ${w.status}</p>
+        </div>
+        `;
+    });
+    box.innerHTML = html;
+}
+
+renderDeposits();
+renderWithdraws();
+</script>
+
+</body>
+</html>
