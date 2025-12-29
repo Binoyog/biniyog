@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Biniyog | Deposit</title>
+
+<style>
+body{
+  margin:0;
+  font-family:Arial;
+  background:linear-gradient(135deg,#020617,#020617,#020617);
+  color:#fff;
+}
+.container{
+  max-width:420px;
+  margin:40px auto;
+  padding:20px;
+}
+.card{
+  background:#020617;
+  border-radius:18px;
+  padding:22px;
+  box-shadow:0 10px 30px rgba(0,0,0,.5);
+}
+h2{
+  text-align:center;
+  margin-bottom:20px;
+}
+label{
+  display:block;
+  margin:14px 0 6px;
+  font-size:14px;
+  color:#cbd5f5;
+}
+input,select{
+  width:100%;
+  padding:14px;
+  border:none;
+  border-radius:12px;
+  outline:none;
+  background:#0f172a;
+  color:#fff;
+  font-size:15px;
+}
+.note{
+  font-size:13px;
+  margin-top:6px;
+  color:#facc15;
+}
+.btn{
+  width:100%;
+  margin-top:22px;
+  padding:14px;
+  font-size:16px;
+  border:none;
+  border-radius:14px;
+  background:#22c55e;
+  color:#000;
+  font-weight:bold;
+  cursor:pointer;
+}
+.btn:active{
+  transform:scale(.98);
+}
+.msg{
+  text-align:center;
+  margin-top:16px;
+  font-size:15px;
+}
+.footer{
+  text-align:center;
+  margin-top:20px;
+  font-size:13px;
+  color:#94a3b8;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+  <div class="card">
+    <h2>💰 Deposit</h2>
+
+    <div style="text-align:center;margin-bottom:15px;color:#94a3b8">
+      📲 Send Money / Cash In<br>
+      <b style="color:#22c55e">01748786117</b>
+    </div>
+
+    <label>Payment Method</label>
+    <select id="method">
+      <option value="Bkash">Bkash</option>
+      <option value="Nagad">Nagad</option>
+      <option value="Rocket">Rocket</option>
+    </select>
+
+    <label>Amount</label>
+    <input type="number" id="amount" placeholder="এমাউন্ট লিখুন">
+    <div class="note">সর্বনিম্ন এমাউন্ট ৫০০৳</div>
+
+    <label>Transaction ID</label>
+    <input type="text" id="trx" placeholder="Transaction ID দিন">
+
+    <button class="btn" onclick="submitDeposit()">Submit Deposit</button>
+
+    <div class="msg" id="msg"></div>
+  </div>
+
+  <div class="footer">
+    © 2025 Biniyog Platform
+  </div>
+</div>
+
+<!-- ================= FIREBASE ================= -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+import { getFirestore, addDoc, collection, doc, getDoc } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+
+const app = initializeApp({
+  apiKey:"AIzaSyBFsTzlRPoWHVXEHbKrPdwxslxZGa7Kqfw",
+  projectId:"biniyog-95d00"
+});
+
+const auth = getAuth(app);
+const db = getFirestore(app);
+let currentUser;
+
+onAuthStateChanged(auth,user=>{
+  if(!user) location.href="index.html";
+  currentUser = user;
+});
+
+window.submitDeposit = async ()=>{
+  const amount = Number(document.getElementById("amount").value);
+  const trx = document.getElementById("trx").value.trim();
+  const method = document.getElementById("method").value;
+  const msg = document.getElementById("msg");
+
+  if(amount < 500){
+    msg.style.color="#ef4444";
+    msg.innerText="❌ সর্বনিম্ন ডিপোজিট ৫০০৳";
+    return;
+  }
+  if(!trx){
+    msg.style.color="#ef4444";
+    msg.innerText="❌ Transaction ID দিন";
+    return;
+  }
+
+  const userSnap = await getDoc(doc(db,"users",currentUser.uid));
+
+  await addDoc(collection(db,"transactions"),{
+    uid: currentUser.uid,
+    phone: userSnap.data().phone || "",
+    type: "deposit",
+    method,
+    amount,
+    trxId: trx,
+    status: "pending",
+    createdAt: Date.now()
+  });
+
+  msg.style.color="#22c55e";
+  msg.innerText="✅ Deposit সফল হয়েছে";
+
+  setTimeout(()=>{
+    location.href="home.html";
+  },2000);
+};
+</script>
+
+</body>
+</html>
