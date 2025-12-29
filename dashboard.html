@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Biniyog | Dashboard</title>
+
+<style>
+body{
+  margin:0;
+  font-family:Arial, Helvetica, sans-serif;
+  background:#f2f2f2;
+}
+.header{
+  background:#d81b60;
+  color:#fff;
+  padding:14px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+.header .left{
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.header .balance{
+  background:#fff;
+  color:#d81b60;
+  padding:6px 14px;
+  border-radius:20px;
+  font-size:14px;
+  cursor:pointer;
+}
+.logout{
+  font-size:20px;
+  cursor:pointer;
+}
+
+.notice{
+  background:#f9a825;
+  margin:12px;
+  padding:10px;
+  border-radius:6px;
+  font-size:14px;
+}
+
+.menu{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:12px;
+  padding:12px;
+}
+.menu div{
+  background:#fff;
+  border-radius:50%;
+  height:70px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-direction:column;
+  font-size:13px;
+}
+.menu span{
+  margin-top:6px;
+}
+
+.banner{
+  margin:12px;
+}
+.banner img{
+  width:100%;
+  border-radius:10px;
+}
+</style>
+</head>
+
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="left">
+    <strong>👤 Profile</strong>
+  </div>
+
+  <div class="balance" onclick="toggleBalance()">
+    Tap To Balance
+  </div>
+
+  <div class="logout" onclick="logout()">⎋</div>
+</div>
+
+<!-- NOTICE -->
+<div class="notice">
+ℹ️ বিনিয়োগ শেয়ার মার্কেটে স্বাগতম
+</div>
+
+<!-- MENU -->
+<div class="menu">
+  <div>📋<span>Task</span></div>
+  <div>💰<span>Deposit</span></div>
+  <div>🏧<span>Withdraw</span></div>
+  <div>📦<span>Plan</span></div>
+
+  <div>👤<span>Profile</span></div>
+  <div>👥<span>Refer</span></div>
+  <div>🔄<span>Transaction</span></div>
+  <div>ℹ️<span>About</span></div>
+</div>
+
+<!-- BANNER -->
+<div class="banner">
+  <img src="https://images.unsplash.com/photo-1521737604893-d14cc237f11d" alt="">
+</div>
+
+<script>
+let show = false;
+
+function toggleBalance(){
+  const btn = document.querySelector(".balance");
+  let bal = localStorage.getItem("balance");
+
+  if(bal === null){
+    bal = 0;
+    localStorage.setItem("balance",0);
+  }
+
+  if(!show){
+    btn.innerText = "৳ " + bal;
+    show = true;
+  }else{
+    btn.innerText = "Tap To Balance";
+    show = false;
+  }
+}
+
+function logout(){
+  localStorage.removeItem("loggedIn");
+  window.location.href = "index.html";
+}
+</script>
+
+</body>
+</html>
