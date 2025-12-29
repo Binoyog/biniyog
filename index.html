@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Biniyog | Login</title>
+
+<style>
+/* ==== ORIGINAL DESIGN UNCHANGED ==== */
+body{margin:0;font-family:Arial;background:#0f1312;color:#fff}
+.header{display:flex;align-items:center;padding:15px;background:#0b0f0e;font-size:24px;font-weight:bold;color:#1abc9c}
+.container{max-width:420px;margin:auto;padding:20px}
+.tabs{display:flex;margin-bottom:20px}
+.tab{flex:1;text-align:center;padding:12px;cursor:pointer;border-bottom:3px solid #333;color:#aaa}
+.tab.active{border-bottom:3px solid #1abc9c;color:#1abc9c}
+label{color:#aaa}
+input{width:100%;padding:12px;margin:8px 0 15px;background:#1a1f1e;border:none;border-radius:6px;color:#fff;font-size:16px}
+button{width:100%;padding:14px;background:#1abc9c;border:none;border-radius:6px;font-size:18px;cursor:pointer}
+.link{color:#1abc9c;text-align:right;cursor:pointer;margin-bottom:15px}
+.msg{text-align:center;margin-top:12px}
+.error{color:#ff6b6b}
+.success{color:#1abc9c}
+.hide{display:none}
+</style>
+</head>
+
+<body>
+
+<div class="header">Biniyog</div>
+
+<div class="container">
+<div class="tabs">
+  <div class="tab active" onclick="showLogin()">Log in</div>
+  <div class="tab" onclick="showSignup()">Sign up</div>
+</div>
+
+<!-- LOGIN -->
+<div id="loginBox">
+  <label>Mobile Number</label>
+  <input id="loginMobile">
+  <label>Password</label>
+  <input type="password" id="loginPass">
+  <button onclick="login()">Log in</button>
+  <div id="loginMsg" class="msg"></div>
+</div>
+
+<!-- SIGNUP -->
+<div id="signupBox" class="hide">
+  <label>Name</label>
+  <input id="suName">
+  <label>Mobile Number</label>
+  <input id="suMobile">
+  <label>New Password</label>
+  <input type="password" id="suPass">
+  <label>Repeat New Password</label>
+  <input type="password" id="suPass2">
+  <button onclick="signup()">Create Account</button>
+  <div id="signupMsg" class="msg"></div>
+</div>
+</div>
+
+<!-- 🔥 FIREBASE -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } 
+from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBFsTzlRPoWHVXEHbKrPdwxslxZGa7Kqfw",
+  authDomain: "biniyog-95d00.firebaseapp.com",
+  projectId: "biniyog-95d00",
+  storageBucket: "biniyog-95d00.firebasestorage.app",
+  messagingSenderId: "523238228802",
+  appId: "1:523238228802:web:a65183bdc4c268f94efedb"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+// UI switch
+window.showLogin = () => {
+  loginBox.classList.remove("hide");
+  signupBox.classList.add("hide");
+};
+window.showSignup = () => {
+  signupBox.classList.remove("hide");
+  loginBox.classList.add("hide");
+};
+
+// SIGNUP
+window.signup = () => {
+  const name = suName.value.trim();
+  const mobile = suMobile.value.trim();
+  const p1 = suPass.value;
+  const p2 = suPass2.value;
+
+  if(p1 !== p2) return signupMsg.innerHTML="Password মিলেনি";
+
+  const email = mobile + "@biniyog.com";
+
+  createUserWithEmailAndPassword(auth, email, p1)
+    .then(()=>{
+      localStorage.setItem("name", name);
+      window.location.href="dashboard.html";
+    })
+    .catch(e=>{
+      signupMsg.innerHTML = e.message;
+    });
+};
+
+// LOGIN
+window.login = () => {
+  const email = loginMobile.value.trim() + "@biniyog.com";
+  const pass = loginPass.value;
+
+  signInWithEmailAndPassword(auth, email, pass)
+    .then(()=>{
+      window.location.href="dashboard.html";
+    })
+    .catch(()=>{
+      loginMsg.innerHTML="ভুল Mobile বা Password";
+    });
+};
+</script>
+
+</body>
+</html>
