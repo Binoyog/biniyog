@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Biniyog | Refer</title>
+
+<style>
+body{font-family:Arial;background:#f1f5f9;padding:15px}
+.box{
+  background:#fff;
+  padding:20px;
+  border-radius:14px;
+  box-shadow:0 6px 18px rgba(0,0,0,.1);
+}
+.code{
+  background:#0f172a;
+  color:#fff;
+  padding:12px;
+  text-align:center;
+  border-radius:10px;
+  font-size:20px;
+  margin-bottom:12px;
+}
+.stat{
+  margin-top:10px;
+  font-size:15px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="box">
+  <h2>👥 Refer & Earn</h2>
+  <div class="code" id="refCode">Loading...</div>
+
+  <div class="stat">⏳ Pending Commission: ৳ <span id="pending">0</span></div>
+  <div class="stat">✅ Approved Commission: ৳ <span id="approved">0</span></div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+import { getAuth,onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+import { getFirestore,doc,getDoc,query,collection,where,getDocs } 
+from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+
+const app = initializeApp({
+  apiKey:"AIzaSyBFsTzlRPoWHVXEHbKrPdwxslxZGa7Kqfw",
+  projectId:"biniyog-95d00"
+});
+const auth=getAuth(app);
+const db=getFirestore(app);
+
+onAuthStateChanged(auth,async user=>{
+  if(!user) location.href="index.html";
+
+  const usnap = await getDoc(doc(db,"users",user.uid));
+  document.getElementById("refCode").innerText = usnap.data().referralCode;
+
+  let pending=0, approved=0;
+  const q = query(
+    collection(db,"referrals"),
+    where("referrerUid","==",user.uid)
+  );
+  const snap = await getDocs(q);
+  snap.forEach(d=>{
+    if(d.data().status==="pending") pending+=d.data().amount;
+    if(d.data().status==="approved") approved+=d.data().amount;
+  });
+
+  pendingEl.innerText=pending;
+  approvedEl.innerText=approved;
+});
+
+const pendingEl=document.getElementById("pending");
+const approvedEl=document.getElementById("approved");
+</script>
+
+</body>
+</html>
