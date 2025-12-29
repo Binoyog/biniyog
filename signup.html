@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Open New Account</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+*{
+  box-sizing:border-box;
+  font-family: Arial, sans-serif;
+}
+body{
+  margin:0;
+  background:#f3f3f3;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+}
+.container{
+  width:100%;
+  max-width:360px;
+  padding:25px;
+}
+.logo{
+  display:flex;
+  justify-content:center;
+  margin-bottom:10px;
+}
+.logo img{
+  width:120px;
+}
+h2{
+  text-align:center;
+  color:#7b3fb3;
+  margin-bottom:30px;
+}
+.field{
+  display:flex;
+  align-items:center;
+  border-bottom:1px solid #bbb;
+  margin-bottom:25px;
+}
+.field span{
+  font-size:18px;
+  margin-right:10px;
+  color:#666;
+}
+.field input{
+  border:none;
+  outline:none;
+  width:100%;
+  padding:10px 0;
+  background:transparent;
+  font-size:16px;
+}
+button{
+  width:100%;
+  padding:14px;
+  border:none;
+  border-radius:30px;
+  background:#7b3fb3;
+  color:white;
+  font-size:16px;
+  margin-top:10px;
+}
+button:active{
+  opacity:0.85;
+}
+.link{
+  text-align:center;
+  margin-top:18px;
+  font-size:14px;
+}
+.link a{
+  color:#7b3fb3;
+  text-decoration:none;
+  font-weight:bold;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <!-- Logo -->
+  <div class="logo">
+    <img src="https://cdn-icons-png.flaticon.com/512/3135/3135706.png">
+  </div>
+
+  <h2>Open New Account</h2>
+
+  <!-- Name -->
+  <div class="field">
+    <span>👤</span>
+    <input type="text" id="name" placeholder="Full Name">
+  </div>
+
+  <!-- Mobile -->
+  <div class="field">
+    <span>📞</span>
+    <input type="text" id="phone" placeholder="Mobile Number">
+  </div>
+
+  <!-- Password -->
+  <div class="field">
+    <span>🔒</span>
+    <input type="password" id="password" placeholder="Password">
+  </div>
+
+  <!-- Repeat Password -->
+  <div class="field">
+    <span>🔒</span>
+    <input type="password" id="repeat" placeholder="Repeat Password">
+  </div>
+
+  <!-- Register -->
+  <button onclick="register()">CREATE ACCOUNT</button>
+
+  <!-- Login link -->
+  <div class="link">
+    Already have an account?
+    <br>
+    <a href="index.html">Login</a>
+  </div>
+
+</div>
+
+<script>
+function register(){
+  const name  = document.getElementById("name").value.trim();
+  const phone = document.getElementById("phone").value.trim();
+  const pass  = document.getElementById("password").value;
+  const rep   = document.getElementById("repeat").value;
+
+  if(name==="" || phone==="" || pass==="" || rep===""){
+    alert("All fields are required");
+    return;
+  }
+
+  if(pass !== rep){
+    alert("Password not matched");
+    return;
+  }
+
+  const user = {
+    name: name,
+    phone: phone,
+    password: pass,
+    balance: 0
+  };
+
+  localStorage.setItem("user", JSON.stringify(user));
+  alert("Account created successfully");
+  window.location.href = "index.html";
+}
+</script>
+
+</body>
+</html>
