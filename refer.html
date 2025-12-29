@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Refer & Earn</title>
+
+<style>
+body{
+    margin:0;
+    font-family:Arial,sans-serif;
+    background:linear-gradient(135deg,#87ceeb,#e0f7ff);
+}
+.header{
+    background:#0288d1;
+    color:white;
+    padding:15px;
+    text-align:center;
+    font-size:22px;
+}
+.container{
+    max-width:420px;
+    margin:20px auto;
+    background:white;
+    padding:20px;
+    border-radius:14px;
+    box-shadow:0 6px 15px rgba(0,0,0,.2);
+}
+.balance{
+    background:#e3f2fd;
+    padding:12px;
+    border-radius:10px;
+    text-align:center;
+    font-size:18px;
+    margin-bottom:15px;
+}
+input{
+    width:100%;
+    padding:12px;
+    margin-bottom:12px;
+    border-radius:8px;
+    border:1px solid #ccc;
+    font-size:15px;
+}
+button{
+    width:100%;
+    padding:12px;
+    background:#0288d1;
+    color:white;
+    border:none;
+    border-radius:8px;
+    font-size:17px;
+    cursor:pointer;
+}
+button:hover{background:#01579b}
+.rules{
+    margin-top:15px;
+    font-size:14px;
+    line-height:1.6;
+}
+.success{
+    color:green;
+    font-weight:bold;
+    text-align:center;
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">Refer & Earn</div>
+
+<div class="container">
+
+<div class="balance">
+    Real Balance: ৳<span id="balance">0</span>
+</div>
+
+<input type="text" id="referCode" placeholder="Enter Refer Code">
+<button onclick="applyRefer()">Apply Refer</button>
+
+<p class="success" id="msg"></p>
+
+<div class="rules">
+<b>Bonus Rules:</b><br>
+✔ Refer Bonus: 100৳<br>
+✔ Level-1: 12%<br>
+✔ Level-2: 7%<br>
+✔ Level-3: 3%<br>
+✔ Auto added to Real Balance
+</div>
+
+</div>
+
+<script>
+// Load balance
+let balance = parseInt(localStorage.getItem("balance")) || 0;
+let usedRefer = localStorage.getItem("usedRefer");
+
+document.getElementById("balance").innerText = balance;
+
+// Apply refer
+function applyRefer(){
+    let code = document.getElementById("referCode").value.trim();
+    if(code===""){
+        alert("Refer code দিন");
+        return;
+    }
+    if(usedRefer){
+        alert("আপনি আগেই Refer ব্যবহার করেছেন");
+        return;
+    }
+
+    // Refer bonus
+    let bonus = 100;
+    balance += bonus;
+
+    // Multi-level percentages (demo calculation)
+    let level1 = Math.floor(balance * 0.12);
+    let level2 = Math.floor(balance * 0.07);
+    let level3 = Math.floor(balance * 0.03);
+
+    balance += (level1 + level2 + level3);
+
+    localStorage.setItem("balance", balance);
+    localStorage.setItem("usedRefer", "yes");
+
+    document.getElementById("balance").innerText = balance;
+    document.getElementById("msg").innerText =
+        "🎉 Refer Successful! Bonus added automatically";
+}
+</script>
+
+</body>
+</html>
