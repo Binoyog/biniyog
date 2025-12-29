@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Biniyog | Admin Login</title>
+
+<style>
+body{
+  margin:0;
+  font-family:Arial, Helvetica, sans-serif;
+  background:#0f1312;
+  color:#fff;
+}
+.box{
+  max-width:380px;
+  margin:120px auto;
+  background:#0b0f0e;
+  padding:24px;
+  border-radius:10px;
+}
+h2{
+  text-align:center;
+  color:#1abc9c;
+}
+input{
+  width:100%;
+  padding:12px;
+  margin-top:12px;
+  background:#1a1f1e;
+  border:none;
+  border-radius:6px;
+  color:#fff;
+}
+button{
+  width:100%;
+  padding:14px;
+  margin-top:20px;
+  background:#1abc9c;
+  border:none;
+  border-radius:6px;
+  font-size:16px;
+  cursor:pointer;
+}
+.msg{
+  text-align:center;
+  margin-top:12px;
+  color:#ff6b6b;
+}
+</style>
+</head>
+
+<body>
+
+<div class="box">
+  <h2>👑 Admin Login</h2>
+
+  <input type="email" id="email" placeholder="Admin Email">
+  <input type="password" id="password" placeholder="Password">
+
+  <button onclick="adminLogin()">Login</button>
+  <div id="msg" class="msg"></div>
+</div>
+
+<!-- 🔥 FIREBASE ADMIN LOGIN -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+import { 
+  getAuth, 
+  signInWithEmailAndPassword 
+} from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+import { 
+  getFirestore, 
+  doc, 
+  getDoc 
+} from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBFsTzlRPoWHVXEHbKrPdwxslxZGa7Kqfw",
+  authDomain: "biniyog-95d00.firebaseapp.com",
+  projectId: "biniyog-95d00",
+  storageBucket: "biniyog-95d00.firebasestorage.app",
+  messagingSenderId: "523238228802",
+  appId: "1:523238228802:web:a65183bdc4c268f94efedb"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+window.adminLogin = async () => {
+  const email = document.getElementById("email").value.trim();
+  const pass = document.getElementById("password").value;
+  const msg = document.getElementById("msg");
+  msg.innerHTML="";
+
+  if(!email || !pass){
+    msg.innerHTML="সব তথ্য দিন";
+    return;
+  }
+
+  try{
+    const res = await signInWithEmailAndPassword(auth,email,pass);
+    const uid = res.user.uid;
+
+    const snap = await getDoc(doc(db,"users",uid));
+    if(!snap.exists() || snap.data().role !== "admin"){
+      msg.innerHTML="Admin access denied";
+      return;
+    }
+
+    // ✅ ADMIN VERIFIED
+    window.location.href="admin.html";
+
+  }catch(e){
+    msg.innerHTML="ভুল ইমেইল বা পাসওয়ার্ড";
+  }
+};
+</script>
+
+</body>
+</html>
