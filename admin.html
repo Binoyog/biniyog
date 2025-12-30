@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<title>Biniyog | Admin Panel</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+body{
+  margin:0;
+  font-family:'Hind Siliguri',sans-serif;
+  background:#f2f2f2;
+}
+.header{
+  background:#d81b60;
+  color:#fff;
+  padding:14px;
+  text-align:center;
+  font-size:18px;
+}
+.box{
+  padding:12px;
+}
+.card{
+  background:#fff;
+  padding:12px;
+  border-radius:10px;
+  margin-bottom:10px;
+}
+.amount{
+  font-size:18px;
+  font-weight:600;
+}
+.status{
+  font-weight:600;
+  color:#f9a825;
+}
+.btns{
+  margin-top:8px;
+  display:flex;
+  gap:8px;
+}
+button{
+  flex:1;
+  padding:10px;
+  border:none;
+  border-radius:6px;
+  font-size:14px;
+  cursor:pointer;
+}
+.approve{ background:#2e7d32; color:#fff; }
+.reject{ background:#c62828; color:#fff; }
+</style>
+</head>
+
+<body>
+
+<div class="header">🛠 Admin Deposit Approval</div>
+<div class="box" id="list">Loading...</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+import { 
+  getFirestore, collection, query, where, getDocs, 
+  doc, updateDoc, increment 
+} from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBFsTzlRPoWHVXEHbKrPdwxslxZGa7Kqfw",
+  authDomain: "biniyog-95d00.firebaseapp.com",
+  projectId: "biniyog-95d00",
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const list = document.getElementById("list");
+
+onAuthStateChanged(auth, async user=>{
+  if(!user){
+    location.href="index.html";
+    return;
+  }
+
+  const q = query(
+    collection(db,"transactions"),
+    where("type","==","deposit"),
+    where("status","==","pending")
+  );
+
+  const snap = await getDocs(q);
+  list.innerHTML = "";
+
+  if(snap.empty){
+    list.innerHTML = "No pending deposits";
+    return;
+  }
+
+  snap.forEach(d=>{
+    const t = d.data();
+    list.innerHTML += `
+      <div class="card">
+        <div><b>User:</b> ${t.phone || t.uid}</div>
+        <div class="amount">৳ ${t.amount}</div>
+        <div><b>Method:</b> ${t.method}</div>
+        <div><b>TRX:</b> ${t.trxId}</div>
+        <div class="status">PENDING</div>
+        <div class="btns">
+          <button class="approve" onclick="approve('${d.id}','${t.uid}',${t.amount})">Approve</button>
+          <button class="reject" onclick="reject('${d.id}')">Reject</button>
+        </div>
+      </div>
+    `;
+  });
+});
+
+window.approve = async (trxId, uid, amount)=>{
+  // update transaction
+  await updateDoc(doc(db,"transactions",trxId),{
+    status:"approved"
+  });
+
+  // update user balance
+  await updateDoc(doc(db,"users",uid),{
+    balance: increment(amount)
+  });
+
+  alert("Approved & Balance Updated");
+  location.reload();
+};
+
+window.reject = async (trxId)=>{
+  await updateDoc(doc(db,"transactions",trxId),{
+    status:"rejected"
+  });
+  alert("Rejected");
+  location.reload();
+};
+</script>
+
+</body>
+</html>
