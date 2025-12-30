@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Binoyog | Login</title>
+
+<style>
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:Arial,Helvetica,sans-serif;
+  background:#0f1419;
+  color:#fff;
+}
+.container{
+  max-width:420px;
+  margin:auto;
+  padding:15px;
+}
+.header{
+  text-align:center;
+  padding:20px 0;
+}
+.header h1{
+  margin:0;
+  font-size:28px;
+  color:#00c087;
+}
+.card{
+  background:#171d22;
+  border-radius:12px;
+  padding:20px;
+}
+.tabs{
+  display:flex;
+  margin-bottom:15px;
+}
+.tab{
+  flex:1;
+  text-align:center;
+  padding:10px;
+  cursor:pointer;
+  border-bottom:2px solid transparent;
+  color:#aaa;
+}
+.tab.active{
+  border-color:#00c087;
+  color:#00c087;
+}
+input{
+  width:100%;
+  padding:12px;
+  margin-top:10px;
+  border-radius:6px;
+  border:none;
+  outline:none;
+  background:#222a30;
+  color:#fff;
+}
+button{
+  width:100%;
+  padding:12px;
+  margin-top:15px;
+  border:none;
+  border-radius:6px;
+  background:#00c087;
+  color:#000;
+  font-weight:bold;
+  cursor:pointer;
+}
+.link{
+  margin-top:12px;
+  text-align:center;
+  color:#00c087;
+  cursor:pointer;
+  font-size:14px;
+}
+.hide{display:none}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+  <div class="header">
+    <h1>Binoyog</h1>
+    <p>Hello, Welcome to Binoyog</p>
+  </div>
+
+  <div class="card">
+
+    <div class="tabs">
+      <div class="tab active" id="loginTab" onclick="showLogin()">Log in</div>
+      <div class="tab" id="signupTab" onclick="showSignup()">Sign up</div>
+    </div>
+
+    <!-- LOGIN -->
+    <div id="loginBox">
+      <input id="loginPhone" placeholder="Phone number">
+      <input id="loginPass" type="password" placeholder="Password">
+      <button onclick="login()">Log in</button>
+      <div class="link" onclick="forgotPassword()">Forgot password?</div>
+    </div>
+
+    <!-- SIGNUP -->
+    <div id="signupBox" class="hide">
+      <input id="name" placeholder="Full name">
+      <input id="signupPhone" placeholder="Phone number">
+      <input id="signupPass" type="password" placeholder="Password">
+      <input id="signupPass2" type="password" placeholder="Confirm password">
+      <input id="referCode" placeholder="Refer code (Optional)">
+      <button onclick="signup()">Continue</button>
+    </div>
+
+  </div>
+</div>
+
+<script type="module">
+/* ================= FIREBASE ================= */
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  updatePassword
+} from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+import {
+  getFirestore,
+  doc,
+  setDoc,
+  serverTimestamp
+} from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBFsTzlRPoWHVXEHbKrPdwxslxZGa7Kqfw",
+  authDomain: "biniyog-95d00.firebaseapp.com",
+  projectId: "biniyog-95d00"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+/* ================= UI ================= */
+window.showSignup = ()=>{
+  loginBox.classList.add("hide");
+  signupBox.classList.remove("hide");
+  loginTab.classList.remove("active");
+  signupTab.classList.add("active");
+};
+window.showLogin = ()=>{
+  signupBox.classList.add("hide");
+  loginBox.classList.remove("hide");
+  signupTab.classList.remove("active");
+  loginTab.classList.add("active");
+};
+
+/* ================= SIGNUP ================= */
+window.signup = async ()=>{
+  if(signupPass.value !== signupPass2.value){
+    alert("Password mismatch");
+    return;
+  }
+
+  const email = signupPhone.value + "@binoyog.com";
+
+  try{
+    const cred = await createUserWithEmailAndPassword(auth,email,signupPass.value);
+
+    await setDoc(doc(db,"users",cred.user.uid),{
+      uid: cred.user.uid,
+      name: name.value,
+      phone: signupPhone.value,
+      referCode: referCode.value || null,
+      balance: 0,
+      role: "user",
+      createdAt: serverTimestamp()
+    });
+
+    alert("Signup successful. Please login.");
+    showLogin();
+  }catch(e){
+    alert(e.message);
+  }
+};
+
+/* ================= LOGIN ================= */
+window.login = async ()=>{
+  try{
+    await signInWithEmailAndPassword(
+      auth,
+      loginPhone.value + "@binoyog.com",
+      loginPass.value
+    );
+    location.href="dashboard.html";
+  }catch(e){
+    alert("Wrong phone or password");
+  }
+};
+
+/* ================= FORGOT PASSWORD ================= */
+window.forgotPassword = async ()=>{
+  const phone = loginPhone.value;
+  if(!phone){
+    alert("Enter phone number first");
+    return;
+  }
+
+  const newPass = Math.random().toString(36).slice(-8);
+
+  try{
+    const user = auth.currentUser;
+    if(!user){
+      alert("Login once to reset password");
+      return;
+    }
+    await updatePassword(user,newPass);
+    alert("Your new password is: " + newPass);
+  }catch(e){
+    alert("Please contact admin");
+  }
+};
+</script>
+
+</body>
+</html>
