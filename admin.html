@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<title>Biniyog | Admin Panel</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+body{
+  font-family:Hind Siliguri,sans-serif;
+  background:#f4f6f9;
+  margin:0;
+  padding:15px;
+}
+h1,h2{margin-top:25px}
+.card{
+  background:#fff;
+  padding:15px;
+  border-radius:10px;
+  margin-bottom:12px;
+  box-shadow:0 2px 6px rgba(0,0,0,.1);
+}
+button{
+  padding:7px 14px;
+  border:none;
+  border-radius:6px;
+  cursor:pointer;
+  margin-right:8px;
+}
+.approve{background:#2ecc71;color:#fff}
+.reject{background:#e74c3c;color:#fff}
+.small{font-size:13px;color:#666}
+.empty{color:#888}
+</style>
+</head>
+
+<body>
+
+<h1>🔐 Admin Panel</h1>
+
+<h2>💰 Pending Deposits</h2>
+<div id="depositList"></div>
+
+<h2>🏧 Pending Withdraws</h2>
+<div id="withdrawList"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+import {
+  getFirestore, collection, query, where, onSnapshot,
+  doc, getDoc, updateDoc, serverTimestamp, addDoc
+} from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBFsTzlRPoWHVXEHbKrPdwxslxZGa7Kqfw",
+  authDomain: "biniyog-95d00.firebaseapp.com",
+  projectId: "biniyog-95d00"
+};
+
+const ADMIN_UID = "UKNCbXAY7IanCMjGDrgmKKUbdvz1";
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+onAuthStateChanged(auth,user=>{
+  if(!user || user.uid !== ADMIN_UID){
+    alert("Unauthorized");
+    location.href="index.html";
+    return;
+  }
+  listenDeposits();
+  listenWithdraws();
+});
+
+/* ================= DEPOSITS ================= */
+function listenDeposits(){
+  const q = query(collection(db,"deposits"), where("status","==","pending"));
+  onSnapshot(q, snap=>{
+    depositList.innerHTML="";
+    if(snap.empty){
+      depositList.innerHTML='<p class="empty">No pending deposits</p>';
+      return;
+    }
+
+    snap.forEach(d=>{
+      const x=d.data();
+      depositList.innerHTML+=`
+      <div class="card">
+        <b>UID:</b> ${x.uid}<br>
+        <b>Amount:</b> ৳${x.amount}<br>
+        <b>Trx ID:</b> ${x.trxId || "-"}<br>
+        <span class="small">${x.createdAt?.seconds ? new Date(x.createdAt.seconds*1000).toLocaleString() : ""}</span><br><br>
+        <button class="approve" onclick="approveDeposit('${d.id}')">Approve</button>
+        <button class="reject" onclick="rejectDeposit('${d.id}')">Reject</button>
+      </div>`;
+    });
+  });
+}
+
+/* ================= WITHDRAWS ================= */
+function listenWithdraws(){
+  const q = query(collection(db,"withdraws"), where("status","==","pending"));
+  onSnapshot(q, snap=>{
+    withdrawList.innerHTML="";
+    if(snap.empty){
+      withdrawList.innerHTML='<p class="empty">No pending withdraws</p>';
+      return;
+    }
+
+    snap.forEach(d=>{
+      const x=d.data();
+      withdrawList.innerHTML+=`
+      <div class="card">
+        <b>UID:</b> ${x.uid}<br>
+        <b>Amount:</b> ৳${x.amount}<br>
+        <b>Mobile:</b> ${x.mobile}<br>
+        <b>Method:</b> ${x.method}<br>
+        <span class="small">${x.createdAt?.seconds ? new Date(x.createdAt.seconds*1000).toLocaleString() : ""}</span><br><br>
+        <button class="approve" onclick="approveWithdraw('${d.id}')">Approve</button>
+        <button class="reject" onclick="rejectWithdraw('${d.id}')">Reject</button>
+      </div>`;
+    });
+  });
+}
+
+/* ================= ACTIONS ================= */
+
+// ✅ SAFE DEPOSIT APPROVE
+window.approveDeposit = async (depositId)=>{
+  const depRef = doc(db,"deposits",depositId);
+  const depSnap = await getDoc(depRef);
+  if(!depSnap.exists()) return;
+
+  if(depSnap.data().status === "approved"){
+    alert("Already approved");
+    return;
+  }
+
+  const { uid, amount, trxId } = depSnap.data();
+
+  const userRef = doc(db,"users",uid);
+  const userSnap = await getDoc(userRef);
+  const balance = userSnap.data()?.balance || 0;
+
+  await updateDoc(userRef,{
+    balance: balance + amount
+  });
+
+  await updateDoc(depRef,{
+    status:"approved",
+    approvedAt:serverTimestamp()
+  });
+
+  await addDoc(collection(db,"transactions"),{
+    uid,
+    type:"deposit",
+    amount,
+    trxId,
+    status:"approved",
+    createdAt:serverTimestamp()
+  });
+
+  alert("✅ Deposit Approved");
+};
+
+// ❌ REJECT DEPOSIT
+window.rejectDeposit = async (depositId)=>{
+  const depRef = doc(db,"deposits",depositId);
+  const depSnap = await getDoc(depRef);
+  if(!depSnap.exists()) return;
+
+  await updateDoc(depRef,{
+    status:"rejected",
+    rejectedAt:serverTimestamp()
+  });
+
+  const { uid, amount, trxId } = depSnap.data();
+
+  await addDoc(collection(db,"transactions"),{
+    uid,
+    type:"deposit",
+    amount,
+    trxId,
+    status:"rejected",
+    createdAt:serverTimestamp()
+  });
+};
+
+// ✅ SAFE WITHDRAW APPROVE
+window.approveWithdraw = async (withdrawId)=>{
+  const wRef = doc(db,"withdraws",withdrawId);
+  const wSnap = await getDoc(wRef);
+  if(!wSnap.exists()) return;
+
+  if(wSnap.data().status === "approved"){
+    alert("Already approved");
+    return;
+  }
+
+  const { uid, amount, mobile, method } = wSnap.data();
+
+  const userRef = doc(db,"users",uid);
+  const userSnap = await getDoc(userRef);
+  const balance = userSnap.data()?.balance || 0;
+
+  if(amount > balance){
+    alert("Insufficient balance");
+    return;
+  }
+
+  await updateDoc(userRef,{
+    balance: balance - amount
+  });
+
+  await updateDoc(wRef,{
+    status:"approved",
+    approvedAt:serverTimestamp()
+  });
+
+  await addDoc(collection(db,"transactions"),{
+    uid,
+    type:"withdraw",
+    amount,
+    mobile,
+    method,
+    status:"approved",
+    createdAt:serverTimestamp()
+  });
+
+  alert("✅ Withdraw Approved");
+};
+
+// ❌ REJECT WITHDRAW
+window.rejectWithdraw = async (withdrawId)=>{
+  const wRef = doc(db,"withdraws",withdrawId);
+  const wSnap = await getDoc(wRef);
+  if(!wSnap.exists()) return;
+
+  await updateDoc(wRef,{
+    status:"rejected",
+    rejectedAt:serverTimestamp()
+  });
+
+  const { uid, amount, mobile, method } = wSnap.data();
+
+  await addDoc(collection(db,"transactions"),{
+    uid,
+    type:"withdraw",
+    amount,
+    mobile,
+    method,
+    status:"rejected",
+    createdAt:serverTimestamp()
+  });
+};
+</script>
+
+</body>
+</html>
