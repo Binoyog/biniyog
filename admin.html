@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Admin Panel</title>
+
+<style>
+body{
+  margin:0;
+  font-family:Arial;
+  background:#f5f5f5;
+}
+.header{
+  background:#000;
+  color:#1abc9c;
+  padding:15px;
+  text-align:center;
+  font-size:20px;
+}
+.section{
+  margin:15px;
+}
+.card{
+  background:#fff;
+  padding:12px;
+  border-radius:10px;
+  margin-bottom:10px;
+  box-shadow:0 2px 6px rgba(0,0,0,.1);
+}
+.btn{
+  padding:8px 12px;
+  border:none;
+  border-radius:6px;
+  cursor:pointer;
+  margin-right:5px;
+}
+.approve{ background:#1abc9c; }
+.reject{ background:#e74c3c; color:#fff; }
+.small{ font-size:13px; color:#555; }
+</style>
+</head>
+
+<body>
+
+<div class="header">🛠️ Admin Panel</div>
+
+<div class="section">
+  <h3>💰 Pending Deposits</h3>
+  <div id="deposits"></div>
+</div>
+
+<div class="section">
+  <h3>💸 Pending Withdraws</h3>
+  <div id="withdraws"></div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+import { getAuth,onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+import {
+  getFirestore,collection,query,where,getDocs,
+  doc,updateDoc,addDoc,increment,serverTimestamp
+} from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBFsTzlRPoWHVXEHbKrPdwxslxZGa7Kqfw",
+  authDomain: "biniyog-95d00.firebaseapp.com",
+  projectId: "biniyog-95d00"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+onAuthStateChanged(auth, async(user)=>{
+  if(!user){
+    alert("Admin login required");
+    location.href="index.html";
+    return;
+  }
+  loadDeposits();
+  loadWithdraws();
+});
+
+/* ================= DEPOSITS ================= */
+async function loadDeposits(){
+  const q = query(collection(db,"deposits"), where("status","==","pending"));
+  const snap = await getDocs(q);
+  const box = document.getElementById("deposits");
+  box.innerHTML = "";
+
+  snap.forEach(docu=>{
+    const d = docu.data();
+    box.innerHTML += `
+      <div class="card">
+        <b>৳${d.amount}</b> | ${d.method}<br>
+        <span class="small">UID: ${d.uid}</span><br><br>
+        <button class="btn approve" onclick="approveDeposit('${docu.id}','${d.uid}',${d.amount})">Approve</button>
+        <button class="btn reject" onclick="rejectDeposit('${docu.id}')">Reject</button>
+      </div>
+    `;
+  });
+}
+
+window.approveDeposit = async(id,uid,amount)=>{
+  await updateDoc(doc(db,"deposits",id),{ status:"approved" });
+  await updateDoc(doc(db,"users",uid),{ balance: increment(amount) });
+
+  await addDoc(collection(db,"transactions"),{
+    uid,
+    amount,
+    type:"deposit",
+    status:"success",
+    time:serverTimestamp()
+  });
+  loadDeposits();
+};
+
+window.rejectDeposit = async(id)=>{
+  await updateDoc(doc(db,"deposits",id),{ status:"rejected" });
+  loadDeposits();
+};
+
+/* ================= WITHDRAW ================= */
+async function loadWithdraws(){
+  const q = query(collection(db,"withdraw_requests"), where("status","==","pending"));
+  const snap = await getDocs(q);
+  const box = document.getElementById("withdraws");
+  box.innerHTML = "";
+
+  snap.forEach(docu=>{
+    const d = docu.data();
+    box.innerHTML += `
+      <div class="card">
+        <b>৳${d.amount}</b> | ${d.method}<br>
+        <span class="small">${d.phone}</span><br>
+        <span class="small">UID: ${d.uid}</span><br><br>
+        <button class="btn approve" onclick="approveWithdraw('${docu.id}','${d.uid}',${d.amount})">Approve</button>
+        <button class="btn reject" onclick="rejectWithdraw('${docu.id}')">Reject</button>
+      </div>
+    `;
+  });
+}
+
+window.approveWithdraw = async(id,uid,amount)=>{
+  await updateDoc(doc(db,"withdraw_requests",id),{ status:"approved" });
+  await updateDoc(doc(db,"users",uid),{ balance: increment(-amount) });
+
+  await addDoc(collection(db,"transactions"),{
+    uid,
+    amount,
+    type:"withdraw",
+    status:"success",
+    time:serverTimestamp()
+  });
+  loadWithdraws();
+};
+
+window.rejectWithdraw = async(id)=>{
+  await updateDoc(doc(db,"withdraw_requests",id),{ status:"rejected" });
+  loadWithdraws();
+};
+</script>
+
+</body>
+</html>
