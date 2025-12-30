@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<title>Biniyog | Admin Panel</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+body{
+  font-family:Hind Siliguri,sans-serif;
+  background:#f4f6f9;
+  margin:0;
+  padding:15px;
+}
+h1,h2{margin-top:25px}
+.card{
+  background:#fff;
+  padding:15px;
+  border-radius:10px;
+  margin-bottom:12px;
+  box-shadow:0 2px 6px rgba(0,0,0,.1);
+}
+button{
+  padding:7px 14px;
+  border:none;
+  border-radius:6px;
+  cursor:pointer;
+  margin-right:8px;
+}
+.approve{background:#2ecc71;color:#fff}
+.reject{background:#e74c3c;color:#fff}
+.small{font-size:13px;color:#666}
+.empty{color:#888}
+</style>
+</head>
+
+<body>
+
+<h1>🔐 Admin Panel</h1>
+
+<h2>💰 Pending Deposits</h2>
+<div id="depositList"></div>
+
+<h2>🏧 Pending Withdraws</h2>
+<div id="withdrawList"></div>
+
+<script type="module">
+/* ================= IMPORT ================= */
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+import {
+  getFirestore, collection, query, where, onSnapshot,
+  doc, updateDoc, increment, serverTimestamp, addDoc
+} from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+
+/* ================= CONFIG ================= */
+const firebaseConfig = {
+  apiKey: "AIzaSyBFsTzlRPoWHVXEHbKrPdwxslxZGa7Kqfw",
+  authDomain: "biniyog-95d00.firebaseapp.com",
+  projectId: "biniyog-95d00"
+};
+
+const ADMIN_UID="UKNCbXAY7IanCMjGDrgmKKUbdvz1";
+
+/* ================= INIT ================= */
+const app=initializeApp(firebaseConfig);
+const auth=getAuth(app);
+const db=getFirestore(app);
+
+/* ================= AUTH ================= */
+onAuthStateChanged(auth,user=>{
+  if(!user || user.uid!==ADMIN_UID){
+    alert("Unauthorized");
+    location.href="index.html";
+  }else{
+    listenDeposits();
+    listenWithdraws();
+  }
+});
+
+/* ================= PENDING DEPOSITS ================= */
+function listenDeposits(){
+  const q=query(collection(db,"deposits"),where("status","==","pending"));
+  onSnapshot(q,snap=>{
+    depositList.innerHTML="";
+    if(snap.empty){
+      depositList.innerHTML='<p class="empty">No pending deposits</p>';
+      return;
+    }
+
+    snap.forEach(d=>{
+      const x=d.data();
+      depositList.innerHTML+=`
+      <div class="card">
+        <b>UID:</b> ${x.uid}<br>
+        <b>Amount:</b> ৳${x.amount}<br>
+        <b>Trx ID:</b> ${x.trxId}<br>
+        <span class="small">${new Date(x.createdAt.seconds*1000).toLocaleString()}</span><br><br>
+        <button class="approve" onclick="approveDeposit('${d.id}','${x.uid}',${x.amount},'${x.trxId}')">Approve</button>
+        <button class="reject" onclick="rejectDeposit('${d.id}','${x.uid}',${x.amount},'${x.trxId}')">Reject</button>
+      </div>`;
+    });
+  });
+}
+
+/* ================= PENDING WITHDRAWS ================= */
+function listenWithdraws(){
+  const q=query(collection(db,"withdraws"),where("status","==","pending"));
+  onSnapshot(q,snap=>{
+    withdrawList.innerHTML="";
+    if(snap.empty){
+      withdrawList.innerHTML='<p class="empty">No pending withdraws</p>';
+      return;
+    }
+
+    snap.forEach(d=>{
+      const x=d.data();
+      withdrawList.innerHTML+=`
+      <div class="card">
+        <b>UID:</b> ${x.uid}<br>
+        <b>Amount:</b> ৳${x.amount}<br>
+        <b>Mobile:</b> ${x.mobile || "N/A"}<br>
+        <span class="small">${new Date(x.createdAt.seconds*1000).toLocaleString()}</span><br><br>
+        <button class="approve" onclick="approveWithdraw('${d.id}','${x.uid}',${x.amount},'${x.mobile}')">Approve</button>
+        <button class="reject" onclick="rejectWithdraw('${d.id}','${x.uid}',${x.amount},'${x.mobile}')">Reject</button>
+      </div>`;
+    });
+  });
+}
+
+/* ================= ACTIONS ================= */
+window.approveDeposit=async(id,uid,amount,trxId)=>{
+  await updateDoc(doc(db,"deposits",id),{
+    status:"approved",
+    approvedAt:serverTimestamp()
+  });
+
+  await updateDoc(doc(db,"users",uid),{
+    balance:increment(amount)
+  });
+
+  await addDoc(collection(db,"transactions"),{
+    uid,type:"deposit",amount,trxId,
+    status:"approved",
+    createdAt:serverTimestamp()
+  });
+};
+
+window.rejectDeposit=async(id,uid,amount,trxId)=>{
+  await updateDoc(doc(db,"deposits",id),{
+    status:"rejected",
+    rejectedAt:serverTimestamp()
+  });
+
+  await addDoc(collection(db,"transactions"),{
+    uid,type:"deposit",amount,trxId,
+    status:"rejected",
+    createdAt:serverTimestamp()
+  });
+};
+
+window.approveWithdraw=async(id,uid,amount,mobile)=>{
+  await updateDoc(doc(db,"withdraws",id),{
+    status:"approved",
+    approvedAt:serverTimestamp()
+  });
+
+  await updateDoc(doc(db,"users",uid),{
+    balance:increment(-amount)
+  });
+
+  await addDoc(collection(db,"transactions"),{
+    uid,type:"withdraw",amount,mobile,
+    status:"approved",
+    createdAt:serverTimestamp()
+  });
+};
+
+window.rejectWithdraw=async(id,uid,amount,mobile)=>{
+  await updateDoc(doc(db,"withdraws",id),{
+    status:"rejected",
+    rejectedAt:serverTimestamp()
+  });
+
+  await addDoc(collection(db,"transactions"),{
+    uid,type:"withdraw",amount,mobile,
+    status:"rejected",
+    createdAt:serverTimestamp()
+  });
+};
+</script>
+</body>
+</html>
