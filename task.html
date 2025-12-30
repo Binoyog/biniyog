@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Biniyog | My Tasks</title>
+
+<style>
+body{
+  margin:0;
+  font-family:Arial, Helvetica, sans-serif;
+  background:#f2f2f2;
+}
+.header{
+  background:#d81b60;
+  color:#fff;
+  padding:14px;
+  text-align:center;
+  font-size:20px;
+  font-weight:bold;
+}
+.card{
+  background:#fff;
+  margin:12px;
+  padding:15px;
+  border-radius:10px;
+  box-shadow:0 4px 10px rgba(0,0,0,.1);
+}
+.card h3{
+  margin:0 0 6px;
+  color:#d81b60;
+}
+.row{
+  font-size:14px;
+  margin:4px 0;
+}
+.badge{
+  display:inline-block;
+  padding:4px 10px;
+  border-radius:20px;
+  font-size:12px;
+  margin-top:6px;
+}
+.running{background:#e3f2fd;color:#1565c0}
+.completed{background:#e8f5e9;color:#2e7d32}
+.claim{
+  margin-top:10px;
+  background:#2ecc71;
+  color:#fff;
+  border:none;
+  padding:8px 20px;
+  border-radius:20px;
+  cursor:pointer;
+}
+.claim:disabled{
+  background:#aaa;
+  cursor:not-allowed;
+}
+.empty{
+  text-align:center;
+  margin-top:40px;
+  color:#777;
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">📋 My Task / Plans</div>
+<div id="list"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+import { getAuth,onAuthStateChanged } 
+from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+import { 
+  getFirestore,collection,query,where,
+  getDocs,doc,updateDoc,getDoc,serverTimestamp
+} from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+
+const app = initializeApp({
+  apiKey:"AIzaSyBFsTzlRPoWHVXEHbKrPdwxslxZGa7Kqfw",
+  projectId:"biniyog-95d00"
+});
+
+const auth = getAuth(app);
+const db = getFirestore(app);
+const list = document.getElementById("list");
+
+onAuthStateChanged(auth, user=>{
+  if(!user){
+    location.href="index.html";
+    return;
+  }
+  loadPlans(user.uid);
+});
+
+async function loadPlans(uid){
+  list.innerHTML="";
+
+  const q = query(
+    collection(db,"user_plans"),
+    where("uid","==",uid)
+  );
+  const snap = await getDocs(q);
+
+  if(snap.empty){
+    list.innerHTML="<div class='empty'>কোনো প্ল্যান নেই</div>";
+    return;
+  }
+
+  snap.forEach(p=>{
+    const d = p.data();
+    const now = Date.now();
+
+    const start = d.startAt?.seconds
+      ? new Date(d.startAt.seconds*1000)
+      : new Date();
+
+    const end = new Date(d.endAt);
+    const remainMs = d.endAt - now;
+    const remainDays = Math.max(0, Math.ceil(remainMs/86400000));
+
+    const today = new Date().toDateString();
+    const lastClaim = d.lastClaimDate || "";
+    const canClaim = d.status==="running" && lastClaim !== today;
+
+    const div=document.createElement("div");
+    div.className="card";
+    div.innerHTML=`
+      <h3>${d.planName}</h3>
+
+      <div class="row">💰 বিনিয়োগ: ৳ ${d.price}</div>
+      <div class="row">📈 দৈনিক আয়: ৳ ${d.daily}</div>
+      <div class="row">📊 মোট আয়: ৳ ${d.totalEarn}</div>
+
+      <div class="row">🕒 শুরু: ${start.toLocaleString()}</div>
+      <div class="row">⏰ শেষ: ${end.toLocaleString()}</div>
+      <div class="row">📅 বাকি দিন: ${remainDays}</div>
+
+      ${
+        d.status==="running"
+        ? `<button class="claim" ${!canClaim?"disabled":""}
+            onclick="claim('${p.id}',${d.daily})">
+            ${canClaim?"আজকের আয় সংগ্রহ করুন":"আজকে ইতিমধ্যে নেওয়া হয়েছে"}
+          </button>`
+        : ""
+      }
+
+      <div class="badge ${d.status}">
+        ${d.status==="running"?"চলমান":"শেষ"}
+      </div>
+    `;
+    list.appendChild(div);
+  });
+}
+
+// ✅ CLAIM DAILY INCOME
+window.claim = async(planId, amount)=>{
+  const user = auth.currentUser;
+  if(!user) return;
+
+  const uref = doc(db,"users",user.uid);
+  const usnap = await getDoc(uref);
+  const bal = usnap.data().balance || 0;
+
+  await updateDoc(uref,{
+    balance: bal + amount
+  });
+
+  await updateDoc(doc(db,"user_plans",planId),{
+    earned: (usnap.data().earned||0) + amount,
+    lastClaimDate: new Date().toDateString(),
+    lastClaimAt: serverTimestamp()
+  });
+
+  alert("✅ আজকের আয় যোগ হয়েছে");
+  loadPlans(user.uid);
+};
+</script>
+
+</body>
+</html>
