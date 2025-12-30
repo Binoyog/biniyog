@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Biniyog | Login</title>
+
+<style>
+body{
+  font-family: Arial, Helvetica, sans-serif;
+  background:linear-gradient(135deg,#d81b60,#8e24aa);
+  min-height:100vh;
+}
+.box{
+  max-width:380px;
+  background:#fff;
+  margin:40px auto;
+  padding:25px;
+  border-radius:12px;
+  box-shadow:0 8px 25px rgba(0,0,0,.2);
+}
+h2{text-align:center;margin-bottom:15px}
+input,button{
+  width:100%;
+  padding:12px;
+  margin-top:10px;
+  border-radius:6px;
+}
+input{border:1px solid #ccc}
+button{
+  background:#d81b60;
+  color:#fff;
+  border:none;
+  cursor:pointer;
+}
+.switch{
+  text-align:center;
+  margin-top:12px;
+  font-size:14px;
+  color:#1976d2;
+  cursor:pointer;
+}
+.hide{display:none}
+</style>
+</head>
+
+<body>
+
+<!-- LOGIN -->
+<div class="box" id="loginBox">
+  <h2>Login</h2>
+  <input id="loginPhone" placeholder="Phone Number">
+  <input id="loginPass" type="password" placeholder="Password">
+  <button onclick="login()">Login</button>
+  <div class="switch" onclick="showSignup()">Create New Account</div>
+  <div class="switch" onclick="forgotPassword()">Forgot Password?</div>
+</div>
+
+<!-- SIGNUP -->
+<div class="box hide" id="signupBox">
+  <h2>Signup</h2>
+  <input id="name" placeholder="Full Name">
+  <input id="signupPhone" placeholder="Phone Number">
+  <input id="signupPass" type="password" placeholder="New Password">
+  <input id="signupPass2" type="password" placeholder="Confirm Password">
+  <button onclick="signup()">Signup</button>
+  <div class="switch" onclick="showLogin()">Back to Login</div>
+</div>
+
+<script type="module">
+/* ================= FIREBASE ================= */
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  updatePassword
+} from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+
+import {
+  getFirestore,
+  doc,
+  setDoc,
+  getDoc,
+  serverTimestamp
+} from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBFsTzlRPoWHVXEHbKrPdwxslxZGa7Kqfw",
+  authDomain: "biniyog-95d00.firebaseapp.com",
+  projectId: "biniyog-95d00"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+/* ================= UI SWITCH ================= */
+window.showSignup = ()=>{ loginBox.classList.add("hide"); signupBox.classList.remove("hide"); }
+window.showLogin  = ()=>{ signupBox.classList.add("hide"); loginBox.classList.remove("hide"); }
+
+/* ================= SIGNUP ================= */
+window.signup = async ()=>{
+  if(signupPass.value !== signupPass2.value){
+    alert("Password mismatch");
+    return;
+  }
+
+  const fakeEmail = signupPhone.value + "@biniyog.com";
+
+  try{
+    const cred = await createUserWithEmailAndPassword(
+      auth,
+      fakeEmail,
+      signupPass.value
+    );
+
+    await setDoc(doc(db,"users",cred.user.uid),{
+      uid: cred.user.uid,
+      name: name.value,
+      phone: signupPhone.value,
+      balance: 0,
+      role: "user",
+      createdAt: serverTimestamp()
+    });
+
+    alert("Signup successful. Please login.");
+    showLogin();
+  }catch(e){
+    alert(e.message);
+  }
+};
+
+/* ================= LOGIN ================= */
+window.login = async ()=>{
+  try{
+    await signInWithEmailAndPassword(
+      auth,
+      loginPhone.value + "@biniyog.com",
+      loginPass.value
+    );
+    location.href="dashboard.html";
+  }catch(e){
+    alert("Wrong phone or password");
+  }
+};
+
+/* ================= FORGOT PASSWORD ================= */
+window.forgotPassword = async ()=>{
+  const phone = loginPhone.value;
+  if(!phone){ alert("Enter phone number"); return; }
+
+  const newPass = Math.random().toString(36).slice(-8);
+
+  try{
+    await signInWithEmailAndPassword(auth, phone+"@biniyog.com", newPass)
+      .catch(()=>{});
+
+    const userSnap = await getDoc(doc(db,"users"));
+    await updatePassword(auth.currentUser, newPass);
+
+    alert("New Password: " + newPass);
+  }catch(e){
+    alert("Contact admin");
+  }
+};
+</script>
+
+</body>
+</html>
