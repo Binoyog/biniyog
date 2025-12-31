@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<title>Biniyog | Profile</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+*{
+  box-sizing:border-box;
+  font-family:'Hind Siliguri', sans-serif;
+}
+
+body{
+  margin:0;
+  min-height:100vh;
+  background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+  color:#fff;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+}
+
+.container{
+  width:100%;
+  max-width:420px;
+  background:rgba(0,0,0,0.35);
+  backdrop-filter:blur(10px);
+  border-radius:18px;
+  padding:22px;
+  box-shadow:0 20px 40px rgba(0,0,0,0.4);
+}
+
+.welcome{
+  text-align:center;
+  font-size:15px;
+  color:#c9fef2;
+  margin-bottom:18px;
+}
+
+h2{
+  margin:0 0 18px;
+  color:#2fffdc;
+  font-weight:600;
+}
+
+label{
+  font-size:14px;
+  opacity:0.9;
+}
+
+input{
+  width:100%;
+  padding:14px;
+  margin-top:6px;
+  margin-bottom:14px;
+  border:none;
+  border-radius:10px;
+  outline:none;
+  font-size:15px;
+}
+
+input:focus{
+  box-shadow:0 0 0 2px #2fffdc;
+}
+
+button{
+  width:100%;
+  padding:14px;
+  background:#18f2c2;
+  border:none;
+  border-radius:12px;
+  font-size:16px;
+  font-weight:600;
+  cursor:pointer;
+  transition:0.3s;
+}
+
+button:hover{
+  background:#12d9ae;
+}
+
+.back{
+  margin-top:14px;
+  text-align:center;
+}
+
+.back a{
+  color:#aefaf0;
+  text-decoration:none;
+  font-size:14px;
+}
+
+.back a:hover{
+  text-decoration:underline;
+}
+
+.msg{
+  text-align:center;
+  margin-top:10px;
+  font-size:14px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <div class="welcome">
+    ইন্টারন্যাশনাল অনলাইন বিনিয়োগ প্লাটফর্মে আপনাকে স্বাগতম
+  </div>
+
+  <h2>Change Password</h2>
+
+  <label>Old Password</label>
+  <input type="password" id="oldPass" placeholder="পুরাতন পাসওয়ার্ড">
+
+  <label>New Password</label>
+  <input type="password" id="newPass" placeholder="নতুন পাসওয়ার্ড">
+
+  <label>Repeat New Password</label>
+  <input type="password" id="confirmPass" placeholder="নতুন পাসওয়ার্ড আবার লিখুন">
+
+  <button onclick="changePassword()">Update Password</button>
+
+  <div class="msg" id="msg"></div>
+
+  <div class="back">
+    <a href="dashboard.html">← Back to Dashboard</a>
+  </div>
+
+</div>
+
+<script>
+function changePassword(){
+  const oldPass = document.getElementById("oldPass").value;
+  const newPass = document.getElementById("newPass").value;
+  const confirmPass = document.getElementById("confirmPass").value;
+  const msg = document.getElementById("msg");
+
+  msg.style.color="#ffbdbd";
+
+  if(!oldPass || !newPass || !confirmPass){
+    msg.innerText="সব ফিল্ড পূরণ করুন";
+    return;
+  }
+
+  if(newPass.length < 6){
+    msg.innerText="পাসওয়ার্ড কমপক্ষে ৬ অক্ষরের হতে হবে";
+    return;
+  }
+
+  if(newPass !== confirmPass){
+    msg.innerText="নতুন পাসওয়ার্ড মিলছে না";
+    return;
+  }
+
+  // 🔥 Firebase Auth এখানে যুক্ত হবে
+  msg.style.color="#aefaf0";
+  msg.innerText="পাসওয়ার্ড সফলভাবে আপডেট হয়েছে (Demo)";
+}
+</script>
+
+</body>
+</html>
