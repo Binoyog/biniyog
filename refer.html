@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<title>Biniyog | Refer & Earn</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+*{
+  box-sizing:border-box;
+  font-family:'Hind Siliguri', sans-serif;
+}
+
+body{
+  margin:0;
+  min-height:100vh;
+  background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  color:#fff;
+}
+
+.container{
+  width:100%;
+  max-width:420px;
+  background:rgba(0,0,0,0.35);
+  backdrop-filter:blur(10px);
+  border-radius:18px;
+  padding:22px;
+  box-shadow:0 20px 40px rgba(0,0,0,0.45);
+  text-align:center;
+}
+
+h2{
+  margin:0 0 12px;
+  color:#2fffdc;
+}
+
+.sub{
+  font-size:14px;
+  color:#c9fef2;
+  margin-bottom:18px;
+}
+
+.ref-box{
+  background:rgba(255,255,255,0.1);
+  border-radius:14px;
+  padding:14px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:16px;
+}
+
+.ref-code{
+  font-size:18px;
+  font-weight:600;
+  letter-spacing:1px;
+}
+
+.copy-btn{
+  background:#18f2c2;
+  border:none;
+  padding:8px 14px;
+  border-radius:10px;
+  font-weight:600;
+  cursor:pointer;
+}
+
+.copy-btn:hover{
+  background:#12d9ae;
+}
+
+.rules{
+  background:rgba(0,0,0,0.25);
+  border-radius:14px;
+  padding:14px;
+  margin-bottom:18px;
+}
+
+.rules p{
+  margin:6px 0;
+  font-size:14px;
+}
+
+.back a{
+  color:#aefaf0;
+  text-decoration:none;
+  font-size:14px;
+}
+
+.back a:hover{
+  text-decoration:underline;
+}
+
+.msg{
+  margin-top:8px;
+  font-size:13px;
+  color:#aefaf0;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <h2>Refer & Earn</h2>
+  <div class="sub">আপনার ইউনিক রেফারেল কোড</div>
+
+  <div class="ref-box">
+    <div class="ref-code" id="refCode">----</div>
+    <button class="copy-btn" onclick="copyCode()">Copy</button>
+  </div>
+
+  <div class="msg" id="msg"></div>
+
+  <div class="rules">
+    <p>🚀 Fast refer 12%</p>
+    <p>⚡ Second refer 7%</p>
+    <p>🤝 Third refer to by any hand 3%</p>
+  </div>
+
+  <div class="back">
+    <a href="index.html">← Back to Homepage</a>
+  </div>
+
+</div>
+
+<script>
+/*
+ 🔥 Firebase-ready logic
+ Future:
+ const uid = auth.currentUser.uid;
+ const refCode = uid.substring(0,6).toUpperCase();
+*/
+
+function generateReferralCode(){
+  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  let code = "BN-";
+  for(let i=0;i<6;i++){
+    code += chars.charAt(Math.floor(Math.random()*chars.length));
+  }
+  return code;
+}
+
+const refCode = generateReferralCode();
+document.getElementById("refCode").innerText = refCode;
+
+function copyCode(){
+  navigator.clipboard.writeText(refCode);
+  document.getElementById("msg").innerText = "রেফারেল কোড কপি হয়েছে ✔️";
+}
+</script>
+
+</body>
+</html>
