@@ -49,51 +49,42 @@ body{
 
 <!-- PLANS -->
 <div class="plan">
-  <h3>মিনি প্লান</h3>
+  <h3>Flash (5 মিনিট)</h3>
+  <p>৳100</p>
+  <p>প্রতি মিনিট আয় ৳10</p>
+  <button class="buy"
+    data-name="Flash"
+    data-price="100"
+    data-minutes="5"
+    data-rate="10">
+    কিনুন
+  </button>
+</div>
+
+<div class="plan">
+  <h3>Mini (১০ দিন)</h3>
   <p>৳500</p>
-  <p>২৪ঘন্টায় আয় ৳90</p>
-  <p>মেয়াদ: ১০ দিন</p>
-  <button class="buy" data-name="Mini" data-price="500" data-daily="90" data-days="10">ক্রয়</button>
+  <p>প্রতি মিনিট আয় ৳0.375</p>
+  <button class="buy"
+    data-name="Mini"
+    data-price="500"
+    data-minutes="14400"
+    data-rate="0.375">
+    কিনুন
+  </button>
 </div>
 
 <div class="plan">
-  <h3>উইডমিল প্লান</h3>
+  <h3>Windmill (১০ দিন)</h3>
   <p>৳1000</p>
-  <p>২৪ঘন্টায় আয় ৳197</p>
-  <p>মেয়াদ: ১০ দিন</p>
-  <button class="buy" data-name="Windmill" data-price="1000" data-daily="197" data-days="10">কিনুন</button>
-</div>
-
-<div class="plan">
-  <h3>শেয়ার প্লান</h3>
-  <p>৳2000</p>
-  <p>২৪ঘন্টায় আয় ৳470</p>
-  <p>মেয়াদ: ১০ দিন</p>
-  <button class="buy" data-name="Share-2000" data-price="2000" data-daily="470" data-days="10">কিনুন</button>
-</div>
-
-<div class="plan">
-  <h3>শেয়ার প্লান</h3>
-  <p>৳5000</p>
-  <p>২৪ঘন্টায় আয় ৳1280</p>
-  <p>মেয়াদ: ১০ দিন</p>
-  <button class="buy" data-name="Share-5000" data-price="5000" data-daily="1280" data-days="10">কিনুন</button>
-</div>
-
-<div class="plan">
-  <h3>ন্যাশনাল প্লান</h3>
-  <p>৳20000</p>
-  <p>২৪ঘন্টায় আয় ৳5487</p>
-  <p>মেয়াদ: ৬ দিন</p>
-  <button class="buy" data-name="National" data-price="20000" data-daily="5487" data-days="6">কিনুন</button>
-</div>
-
-<div class="plan">
-  <h3>মেগা প্লান</h3>
-  <p>৳50000</p>
-  <p>২৪ঘন্টায় আয় ৳13485</p>
-  <p>মেয়াদ: ৬ দিন</p>
-  <button class="buy" data-name="Mega" data-price="50000" data-daily="13485" data-days="6">কিনুন</button>
+  <p>প্রতি মিনিট আয় ৳0.82</p>
+  <button class="buy"
+    data-name="Windmill"
+    data-price="1000"
+    data-minutes="14400"
+    data-rate="0.82">
+    কিনুন
+  </button>
 </div>
 
 <!-- FIREBASE -->
@@ -101,7 +92,7 @@ body{
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
 import { getAuth,onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
 import {
-  getFirestore,doc,getDoc,setDoc,updateDoc,
+  getFirestore,doc,getDoc,updateDoc,
   addDoc,collection,serverTimestamp
 } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
 
@@ -125,27 +116,13 @@ onAuthStateChanged(auth, async(user)=>{
     location.href="index.html";
     return;
   }
-
   uid = user.uid;
-  const uref = doc(db,"users",uid);
-
-  // 🔐 ensure user doc exists
-  const snap = await getDoc(uref);
-  if(!snap.exists()){
-    await setDoc(uref,{
-      uid,
-      role:"user",
-      balance:0,
-      createdAt:serverTimestamp()
-    });
-  }
-
   buttons.forEach(b=>b.disabled=false);
 });
 
-/* BUY HANDLER */
+/* BUY */
 buttons.forEach(btn=>{
-  btn.addEventListener("click",()=>buyPlan(btn));
+  btn.onclick = ()=>buyPlan(btn);
 });
 
 async function buyPlan(btn){
@@ -154,52 +131,55 @@ async function buyPlan(btn){
 
   const planName = btn.dataset.name;
   const price = Number(btn.dataset.price);
-  const daily = Number(btn.dataset.daily);
-  const days = Number(btn.dataset.days);
+  const durationMinutes = Number(btn.dataset.minutes);
+  const earningPerMinute = Number(btn.dataset.rate);
 
   const uref = doc(db,"users",uid);
-  const snap = await getDoc(uref);
+  const usnap = await getDoc(uref);
 
-  if(!snap.exists()){
-    alert("ইউজার তথ্য পাওয়া যায়নি");
-    btn.disabled = false;
+  if(!usnap.exists()){
+    alert("ইউজার পাওয়া যায়নি");
+    btn.disabled=false;
     return;
   }
 
-  const balance = Number(snap.data().balance || 0);
-
+  const balance = Number(usnap.data().balance||0);
   if(balance < price){
     alert("❌ পর্যাপ্ত ব্যালেন্স নেই");
-    btn.disabled = false;
+    btn.disabled=false;
     return;
   }
 
-  // 💸 balance deduct
+  // deduct balance
   await updateDoc(uref,{
     balance: balance - price
   });
 
-  // 📦 save plan
+  const totalEarn = durationMinutes * earningPerMinute;
+  const now = Date.now();
+
+  // save plan
   await addDoc(collection(db,"user_plans"),{
     uid,
     planName,
     price,
-    daily,
-    days,
-    totalEarn: daily * days,
-    earned: 0,
+    durationMinutes,
+    earningPerMinute,
+    totalEarn,
+    earned:0,
     startAt: serverTimestamp(),
-    endAt: Date.now() + days*86400000,
-    status:"running"
+    endAt: now + durationMinutes*60000,
+    status:"running",
+    credited:false
   });
 
-  alert("✅ প্ল্যান সফলভাবে কেনা হয়েছে\n📦 Task বক্স চেক করুন");
+  alert("✅ প্ল্যান সফলভাবে কেনা হয়েছে\n📦 Task বক্স চেক করুন");
   location.href="task.html";
 
- }catch(err){
-  console.error(err);
-  alert("⚠️ কিছু সমস্যা হয়েছে, আবার চেষ্টা করুন");
-  btn.disabled = false;
+ }catch(e){
+  console.error(e);
+  alert("⚠️ সমস্যা হয়েছে, আবার চেষ্টা করুন");
+  btn.disabled=false;
  }
 }
 </script>
