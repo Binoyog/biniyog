@@ -77,32 +77,6 @@ button{
   font-size:14px;
 }
 .hide{display:none}
-
-/* Forgot password modal */
-.modal{
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.7);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-}
-.modal-box{
-  background:#171d22;
-  padding:20px;
-  border-radius:10px;
-  width:90%;
-  max-width:350px;
-  text-align:center;
-}
-.modal-box input{
-  text-align:center;
-  font-weight:bold;
-  letter-spacing:1px;
-}
-.modal-box button{
-  margin-top:10px;
-}
 </style>
 </head>
 
@@ -139,16 +113,6 @@ button{
       <button onclick="signup()">Continue</button>
     </div>
 
-  </div>
-</div>
-
-<!-- PASSWORD MODAL -->
-<div id="passModal" class="modal hide">
-  <div class="modal-box">
-    <h3>New Password</h3>
-    <input id="newPassField" readonly>
-    <button onclick="copyPassword()">Copy Password</button>
-    <button onclick="closeModal()">Close</button>
   </div>
 </div>
 
@@ -236,7 +200,7 @@ window.login = async ()=>{
   }
 };
 
-/* ================= FORGOT PASSWORD ================= */
+/* ================= FORGOT PASSWORD (AUTO APPROVED) ================= */
 window.forgotPassword = async ()=>{
   const phone = prompt("Enter your phone number");
   if(!phone) return;
@@ -247,25 +211,18 @@ window.forgotPassword = async ()=>{
     await addDoc(collection(db,"passwordResets"),{
       phone: phone,
       newPassword: newPass,
-      status: "approved",
+      status: "approved",   // ✅ auto approved
       createdAt: serverTimestamp()
     });
 
-    newPassField.value = newPass;
-    passModal.classList.remove("hide");
+    alert(
+      "Your new password:\n\n" +
+      newPass +
+      "\n\nPlease login using this password."
+    );
   }catch(e){
     alert("Something went wrong");
   }
-};
-
-window.copyPassword = ()=>{
-  newPassField.select();
-  document.execCommand("copy");
-  alert("Password copied!");
-};
-
-window.closeModal = ()=>{
-  passModal.classList.add("hide");
 };
 </script>
 
