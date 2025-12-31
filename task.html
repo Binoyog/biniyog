@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Biniyog | My Tasks</title>
+
+<style>
+body{
+  margin:0;
+  font-family:Arial, Helvetica, sans-serif;
+  background:#f2f2f2;
+}
+.header{
+  background:#d81b60;
+  color:#fff;
+  padding:14px;
+  text-align:center;
+  font-size:20px;
+  font-weight:bold;
+}
+.card{
+  background:#fff;
+  margin:12px;
+  padding:15px;
+  border-radius:12px;
+  box-shadow:0 4px 10px rgba(0,0,0,.1);
+}
+.card h3{
+  margin:0 0 8px;
+  color:#d81b60;
+}
+.row{
+  font-size:14px;
+  margin:4px 0;
+}
+.badge{
+  display:inline-block;
+  padding:4px 12px;
+  border-radius:20px;
+  font-size:12px;
+  margin-top:8px;
+}
+.running{background:#e3f2fd;color:#1565c0}
+.completed{background:#e8f5e9;color:#2e7d32}
+.empty{
+  text-align:center;
+  margin-top:40px;
+  color:#777;
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">📋 My Task / Plans</div>
+<div id="list"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+import { getAuth,onAuthStateChanged }
+from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+import {
+  getFirestore,collection,query,where,
+  getDocs,doc,updateDoc,getDoc,increment
+} from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+
+const app = initializeApp({
+  apiKey:"AIzaSyBFsTzlRPoWHVXEHbKrPdwxslxZGa7Kqfw",
+  projectId:"biniyog-95d00"
+});
+
+const auth = getAuth(app);
+const db = getFirestore(app);
+const list = document.getElementById("list");
+
+onAuthStateChanged(auth,user=>{
+  if(!user){
+    location.href="index.html";
+    return;
+  }
+  loadPlans(user.uid);
+});
+
+/* ================= LOAD PLANS ================= */
+async function loadPlans(uid){
+  list.innerHTML="";
+
+  const q=query(
+    collection(db,"user_plans"),
+    where("uid","==",uid)
+  );
+  const snap=await getDocs(q);
+
+  if(snap.empty){
+    list.innerHTML="<div class='empty'>কোনো প্ল্যান নেই</div>";
+    return;
+  }
+
+  snap.forEach(docSnap=>{
+    const d=docSnap.data();
+    const now=Date.now();
+
+    const endAt = typeof d.endAt === "number" ? d.endAt : d.endAt.toMillis();
+    const remainMs = endAt - now;
+
+    const div=document.createElement("div");
+    div.className="card";
+    div.id="plan-"+docSnap.id;
+
+    /* 🔥 FLASH PLAN */
+    if(d.planType==="flash"){
+      let remainText = "সময় শেষ";
+      if(remainMs > 0){
+        remainText = formatTime(remainMs);
+        startCountdown(docSnap.id, endAt);
+      }else{
+        autoCompleteFlash(docSnap.id, d);
+      }
+
+      div.innerHTML=`
+        <h3>${d.planName}</h3>
+
+        <div class="row">💰 বিনিয়োগ: ৳ ${d.price}</div>
+        <div class="row">📈 মোট আয়: ৳ ${d.totalEarn}</div>
+        <div class="row">💵 ইতিমধ্যে পেয়েছেন: ৳ ${d.earned || 0}</div>
+        <div class="row">⏱️ ${remainMs>0 ? "বাকি সময়" : "সময় শেষ"}: ${remainText}</div>
+
+        <div class="badge ${d.status}">
+          ${d.status==="running" ? "চলমান" : "Complete"}
+        </div>
+      `;
+    }
+
+    /* 🔵 DAILY PLAN (UNCHANGED) */
+    if(d.planType==="daily"){
+      const remainDays=Math.max(0,Math.ceil(remainMs/86400000));
+      div.innerHTML=`
+        <h3>${d.planName}</h3>
+        <div class="row">💰 বিনিয়োগ: ৳ ${d.price}</div>
+        <div class="row">📈 দৈনিক আয়: ৳ ${d.daily}</div>
+        <div class="row">📊 মোট আয়: ৳ ${d.totalEarn}</div>
+        <div class="row">📅 বাকি দিন: ${remainDays}</div>
+
+        <div class="badge ${d.status}">
+          ${d.status==="running"?"চলমান":"শেষ"}
+        </div>
+      `;
+    }
+
+    list.appendChild(div);
+  });
+}
+
+/* ================= FLASH COUNTDOWN ================= */
+function startCountdown(planId,endTime){
+  const el=document.getElementById("plan-"+planId);
+
+  const timer=setInterval(()=>{
+    const now=Date.now();
+    const diff=endTime-now;
+
+    if(diff<=0){
+      clearInterval(timer);
+      el.querySelector(".row:nth-child(5)").innerHTML="⏱️ সময় শেষ";
+      autoCompleteFlash(planId);
+      return;
+    }
+
+    el.querySelector(".row:nth-child(5)").innerHTML=
+      "⏱️ বাকি সময়: "+formatTime(diff);
+  },1000);
+}
+
+/* ================= AUTO COMPLETE FLASH ================= */
+async function autoCompleteFlash(planId,planData){
+  const planRef=doc(db,"user_plans",planId);
+  const snap=await getDoc(planRef);
+  if(!snap.exists()) return;
+
+  const d=snap.data();
+  if(d.status==="completed") return;
+
+  const user=auth.currentUser;
+  const uref=doc(db,"users",user.uid);
+
+  await updateDoc(uref,{
+    balance: increment(d.totalEarn)
+  });
+
+  await updateDoc(planRef,{
+    earned: d.totalEarn,
+    status:"completed"
+  });
+
+  loadPlans(user.uid);
+}
+
+/* ================= UTIL ================= */
+function formatTime(ms){
+  const s=Math.floor(ms/1000)%60;
+  const m=Math.floor(ms/60000);
+  return `${m} মিনিট ${s} সেকেন্ড`;
+}
+</script>
+
+</body>
+</html>
