@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Binoyog | Admin Dashboard</title>
+
+<style>
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#0f1419;color:#fff;}
+.container{max-width:1000px;margin:auto;padding:20px;}
+.header{display:flex;justify-content:space-between;align-items:center;}
+.header h1{color:#ffb703;}
+button{padding:10px 15px;border:none;border-radius:6px;background:#ff4d4d;color:#fff;cursor:pointer;}
+.card{background:#171d22;border-radius:10px;padding:15px;margin-top:20px;}
+table{width:100%;border-collapse:collapse;}
+th,td{padding:10px;border-bottom:1px solid #333;}
+button.approve{background:#00c087;color:#000;}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+    <h1>Admin Dashboard</h1>
+    <button onclick="logout()">Logout</button>
+  </div>
+
+  <div class="card">
+    <h2>Pending Deposits</h2>
+    <table>
+      <thead><tr><th>UID</th><th>Amount</th><th>Action</th></tr></thead>
+      <tbody id="depositList"></tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2>Pending Withdraws</h2>
+    <table>
+      <thead><tr><th>UID</th><th>Amount</th><th>Action</th></tr></thead>
+      <tbody id="withdrawList"></tbody>
+    </table>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+import {
+  getAuth,
+  onAuthStateChanged,
+  signOut
+} from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+import {
+  getFirestore,
+  doc,
+  updateDoc,
+  collection,
+  query,
+  where,
+  getDocs,
+  addDoc,
+  serverTimestamp
+} from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBFsTzlRPoWHVXEHbKrPdwxslxZGa7Kqfw",
+  authDomain: "biniyog-95d00.firebaseapp.com",
+  projectId: "biniyog-95d00"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+/* Admin protection */
+onAuthStateChanged(auth, async user => {
+  if(!user) location.href="admin-login.html";
+  const snap = await getDoc(doc(db,"users",user.uid));
+  if(!snap.exists() || snap.data().role!=="admin"){
+    await signOut(auth);
+    location.href="admin-login.html";
+  }
+  loadDeposits();
+  loadWithdraws();
+});
+
+/* Deposits */
+async function loadDeposits(){
+  depositList.innerHTML="";
+  const q = query(collection(db,"deposits"),where("status","==","pending"));
+  const snap = await getDocs(q);
+  snap.forEach(d=>{
+    const v = d.data();
+    depositList.innerHTML += `
+      <tr>
+        <td>${v.uid}</td>
+        <td>${v.amount}</td>
+        <td><button class="approve" onclick="approveDeposit('${d.id}',${v.amount},'${v.uid}')">Approve</button></td>
+      </tr>`;
+  });
+}
+
+window.approveDeposit = async (id, amount, uid)=>{
+  await updateDoc(doc(db,"deposits",id),{status:"approved"});
+  await addDoc(collection(db,"transactions"),{
+    uid,
+    type:"deposit",
+    amount,
+    status:"approved",
+    createdAt:serverTimestamp()
+  });
+  loadDeposits();
+}
+
+/* Withdraws */
+async function loadWithdraws(){
+  withdrawList.innerHTML="";
+  const q = query(collection(db,"withdraws"),where("status","==","pending"));
+  const snap = await getDocs(q);
+  snap.forEach(d=>{
+    const v = d.data();
+    withdrawList.innerHTML += `
+      <tr>
+        <td>${v.uid}</td>
+        <td>${v.amount}</td>
+        <td><button class="approve" onclick="approveWithdraw('${d.id}')">Approve</button></td>
+      </tr>`;
+  });
+}
+
+window.approveWithdraw = async (id)=>{
+  await updateDoc(doc(db,"withdraws",id),{status:"approved"});
+  loadWithdraws();
+}
+
+/* Logout */
+window.logout = async ()=>{
+  await signOut(auth);
+  location.href="admin-login.html";
+};
+</script>
+
+</body>
+</html>
