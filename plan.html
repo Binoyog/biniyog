@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Biniyog | Investment Plan</title>
+
+<style>
+body{
+  margin:0;
+  font-family:Arial, Helvetica, sans-serif;
+  background:#fdecec;
+}
+.header{
+  padding:16px;
+  text-align:center;
+  font-size:22px;
+  font-weight:bold;
+}
+.plan{
+  background:#b23a1e;
+  color:#fff;
+  margin:15px;
+  border-radius:18px;
+  padding:20px;
+  text-align:center;
+}
+.plan h3{margin:5px 0}
+.plan p{margin:4px 0;font-size:15px}
+.buy{
+  margin-top:12px;
+  background:#facc15;
+  border:none;
+  padding:10px 26px;
+  border-radius:20px;
+  font-weight:bold;
+  cursor:pointer;
+}
+.buy:disabled{
+  opacity:.6;
+  cursor:not-allowed;
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">ইনভেস্টমেন্ট প্লান</div>
+
+<!-- ⚡ FLASH 10 MIN PLAN -->
+<div class="plan">
+  <h3>⚡ Flash-10min</h3>
+  <p>৳397</p>
+  <p>১০ মিনিটে আয় ৳400</p>
+  <p>মেয়াদ: ১০ মিনিট</p>
+  <button class="buy"
+    data-type="flash"
+    data-name="Flash-10min"
+    data-price="397"
+    data-earn="400"
+    data-minutes="10">
+    কিনুন
+  </button>
+</div>
+
+<!-- DAILY PLANS (UNCHANGED) -->
+<div class="plan">
+  <h3>মিনি প্লান</h3>
+  <p>৳500</p>
+  <p>২৪ঘন্টায় আয় ৳90</p>
+  <p>মেয়াদ: ১০ দিন</p>
+  <button class="buy" data-type="daily" data-name="Mini" data-price="500" data-daily="90" data-days="10">ক্রয়</button>
+</div>
+
+<div class="plan">
+  <h3>উইডমিল প্লান</h3>
+  <p>৳1000</p>
+  <p>২৪ঘন্টায় আয় ৳197</p>
+  <p>মেয়াদ: ১০ দিন</p>
+  <button class="buy" data-type="daily" data-name="Windmill" data-price="1000" data-daily="197" data-days="10">কিনুন</button>
+</div>
+
+<!-- FIREBASE -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+import { getAuth,onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+import {
+  getFirestore,doc,getDoc,setDoc,updateDoc,
+  addDoc,collection,serverTimestamp
+} from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+
+const app = initializeApp({
+  apiKey:"AIzaSyBFsTzlRPoWHVXEHbKrPdwxslxZGa7Kqfw",
+  authDomain:"biniyog-95d00.firebaseapp.com",
+  projectId:"biniyog-95d00"
+});
+
+const auth=getAuth(app);
+const db=getFirestore(app);
+let uid=null;
+
+const buttons=document.querySelectorAll(".buy");
+buttons.forEach(b=>b.disabled=true);
+
+onAuthStateChanged(auth,async(user)=>{
+  if(!user){ location.href="index.html"; return; }
+  uid=user.uid;
+
+  const uref=doc(db,"users",uid);
+  const snap=await getDoc(uref);
+  if(!snap.exists()){
+    await setDoc(uref,{
+      uid,role:"user",balance:0,createdAt:serverTimestamp()
+    });
+  }
+  buttons.forEach(b=>b.disabled=false);
+});
+
+buttons.forEach(btn=>btn.onclick=()=>buyPlan(btn));
+
+async function buyPlan(btn){
+  btn.disabled=true;
+
+  const type=btn.dataset.type;
+  const price=Number(btn.dataset.price);
+
+  const uref=doc(db,"users",uid);
+  const usnap=await getDoc(uref);
+  const balance=usnap.data().balance||0;
+
+  if(balance<price){
+    alert("❌ পর্যাপ্ত ব্যালেন্স নেই");
+    btn.disabled=false;
+    return;
+  }
+
+  await updateDoc(uref,{ balance: balance-price });
+
+  // 🔥 FLASH PLAN
+  if(type==="flash"){
+    const earn=Number(btn.dataset.earn);
+    const minutes=Number(btn.dataset.minutes);
+
+    await addDoc(collection(db,"user_plans"),{
+      uid,
+      planName: btn.dataset.name,
+      price,
+      totalEarn: earn,
+      earned: 0,
+      durationMinutes: minutes,
+      startAt: Date.now(),
+      endAt: Date.now() + minutes*60000,
+      status:"running",
+      planType:"flash"
+    });
+  }
+
+  // 🔵 DAILY PLAN
+  if(type==="daily"){
+    const daily=Number(btn.dataset.daily);
+    const days=Number(btn.dataset.days);
+
+    await addDoc(collection(db,"user_plans"),{
+      uid,
+      planName: btn.dataset.name,
+      price,
+      daily,
+      days,
+      totalEarn: daily*days,
+      earned:0,
+      startAt: Date.now(),
+      endAt: Date.now()+days*86400000,
+      status:"running",
+      planType:"daily"
+    });
+  }
+
+  alert("✅ প্ল্যান সফলভাবে কেনা হয়েছে");
+  location.href="task.html";
+}
+</script>
+
+</body>
+</html>
